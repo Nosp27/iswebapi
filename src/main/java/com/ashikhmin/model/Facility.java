@@ -1,14 +1,13 @@
 package com.ashikhmin.model;
 
-import org.springframework.context.annotation.Primary;
+import org.hibernate.annotations.Cascade;
+
 import javax.persistence.Id;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "facility")
 public class Facility {
     public int get_id() {
         return _id;
@@ -42,6 +41,14 @@ public class Facility {
         this.categories = categories;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Region getRegion() {
         return region;
     }
@@ -51,19 +58,14 @@ public class Facility {
     }
 
     @Id
+    @GeneratedValue
     private int _id;
+    private String name;
     private String description;
     private double[] coordinates;
 
-    public Facility() {
-        _id = -1;
-        description = "asd";
-        coordinates = new double[]{0.0, 0.0};
-        categories = new HashSet<>(3);
-        region = new Region();
-    }
-
     @ManyToMany
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     @JoinTable(
             name = "facility_to_category",
             joinColumns = @JoinColumn(name = "catName"),
@@ -71,6 +73,7 @@ public class Facility {
     private Set<Category> categories;
 
     @ManyToOne
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     @JoinTable(
             name = "facility_to_region",
             joinColumns = @JoinColumn(name = "regionId"),

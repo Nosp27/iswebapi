@@ -1,8 +1,5 @@
 package com.ashikhmin.controller;
 
-import com.ashikhmin.model.Category;
-import com.ashikhmin.model.Region;
-
 import java.util.List;
 
 public class FacilityCriterias {
