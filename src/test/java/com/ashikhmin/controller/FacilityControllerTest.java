@@ -8,6 +8,8 @@ import com.ashikhmin.model.RegionRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +21,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Arrays;
 
@@ -40,14 +44,24 @@ class FacilityControllerTest {
     @Autowired
     CategoryRepo categoryRepo;
 
-    @Autowired
     MockMvc mvc;
+
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+
+    @BeforeEach
+    public void setup()
+    {
+        //Init MockMvc Object
+        mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    }
 
     private ObjectMapper mapper = new ObjectMapper();
 
     @Transactional
     @Test
     void testCreateFacility() throws Exception {
+        long initialCount = facilityRepo.count();
         Facility f = new Facility();
         f.setDescription("Test facility description");
         f.setName("Test Facility");
@@ -60,7 +74,7 @@ class FacilityControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(f.getName())));
-        Assert.assertTrue(facilityRepo.findById(f.get_id()).isPresent());
+        Assert.assertEquals(facilityRepo.count(), initialCount + 1L);
     }
 
     @Transactional
