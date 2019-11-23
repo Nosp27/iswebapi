@@ -1,8 +1,9 @@
 package com.ashikhmin.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import com.ashikhmin.model.helpdesk.Message;
+
+import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
 public class Actor {
@@ -12,4 +13,7 @@ public class Actor {
 
     long authToken;
     String username;
+
+    @OneToMany(mappedBy = "actor")
+    Collection<Message> messages;
 }
