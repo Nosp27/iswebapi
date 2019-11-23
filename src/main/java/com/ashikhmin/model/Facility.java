@@ -9,6 +9,13 @@ import java.util.Set;
 
 @Entity
 public class Facility {
+    @Id
+    @GeneratedValue
+    private int _id;
+    private String name;
+    private String description;
+    private double[] coordinates;
+
     public int get_id() {
         return _id;
     }
@@ -56,13 +63,6 @@ public class Facility {
     public void setRegion(Region region) {
         this.region = region;
     }
-
-    @Id
-    @GeneratedValue
-    private int _id;
-    private String name;
-    private String description;
-    private double[] coordinates;
 
     @ManyToMany
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
