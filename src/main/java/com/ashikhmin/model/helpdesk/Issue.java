@@ -15,8 +15,6 @@ public class Issue {
     @OneToMany(mappedBy = "issue")
     List<Message> messages;
 
-    private Issue(){}
-
     public static Issue createIssue(){
         return new Issue();
     }
