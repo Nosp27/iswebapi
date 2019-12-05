@@ -6,6 +6,8 @@ import com.ashikhmin.model.RegionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class RegionController {
     @Autowired
@@ -14,6 +16,11 @@ public class RegionController {
     @GetMapping(path = "/region/{id}")
     Region getRegion(@PathVariable("id") int id) {
         return regionRepo.findById(id).orElseThrow(IswebapiApplication.valueError("No region with id " + id));
+    }
+
+    @GetMapping(path="/regions")
+    Iterable<Region> listRegions() {
+        return regionRepo.findAll();
     }
 
     @PostMapping(path = "/region")

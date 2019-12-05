@@ -1,7 +1,6 @@
 package com.ashikhmin.model;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import java.util.Set;
@@ -9,7 +8,6 @@ import java.util.Set;
 @Entity
 public class Category {
     @Id
-    @GeneratedValue
     private String catName;
 
     @ManyToMany(mappedBy = "categories")
