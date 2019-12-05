@@ -12,17 +12,22 @@ public class CategoryController {
     CategoryRepo categoryRepo;
 
     @GetMapping(path = "/category/{catName}")
-    Category getRegion(@PathVariable("catName") String catName) {
+    Category getCategory(@PathVariable("catName") String catName) {
         return categoryRepo.findById(catName).orElseThrow(IswebapiApplication.valueError("No category " + catName));
     }
 
     @PostMapping(path = "/category")
-    Category addRegion(@RequestBody Category category) {
+    Category addCategory(@RequestBody Category category) {
         return categoryRepo.save(category);
     }
 
+    @GetMapping(path = "/categories")
+    Iterable<Category> listCategories() {
+        return categoryRepo.findAll();
+    }
+
     @PutMapping(path = "/category/{catName}")
-    Category updateRegion(@PathVariable String catName, @RequestBody Category category) {
+    Category updateCategory(@PathVariable String catName, @RequestBody Category category) {
         if(categoryRepo.existsById(catName))
             return categoryRepo.save(category);
 
