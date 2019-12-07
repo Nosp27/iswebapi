@@ -14,14 +14,15 @@ public class Facility {
     private int _id;
     private String name;
     private String description;
-    private double[] coordinates;
+    private Double lat;
+    private Double lng;
 
     public int get_id() {
         return _id;
     }
 
-    public void set_id(int _id) {
-        this._id = _id;
+    public void set_id(int id) {
+        _id = id;
     }
 
     public String getDescription() {
@@ -32,12 +33,9 @@ public class Facility {
         this.description = description;
     }
 
-    public double[] getCoordinates() {
-        return coordinates;
-    }
-
-    public void setCoordinates(double[] coordinates) {
-        this.coordinates = coordinates;
+    public void setCoordinates(double lat, double lng){
+        this.lat = lat;
+        this.lng = lng;
     }
 
     public Set<Category> getCategories() {
@@ -79,4 +77,20 @@ public class Facility {
             joinColumns = @JoinColumn(name = "regionId"),
             inverseJoinColumns = @JoinColumn(name = "_id"))
     private Region region;
+
+    public Double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public Double getLng() {
+        return lng;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
+    }
 }

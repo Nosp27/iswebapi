@@ -19,10 +19,13 @@ public class FacilityController {
     @Autowired
     private RegionRepo regionRepo;
 
-    @PostMapping(path="/facilities")
+    @PostMapping(path = "/facilities")
     Iterable<Facility> getFacilities(@RequestBody FacilityCriterias criterias) {
         Set<Category> cats;
         Set<Region> regions;
+        if (criterias.getRegions() == null && criterias.getCategories() == null) {
+            return facilityRepo.findAll();
+        }
         if (criterias.getCategories() == null) {
             cats = new HashSet<>();
             categoryRepo.findAll().iterator().forEachRemaining(cats::add);
@@ -35,14 +38,14 @@ public class FacilityController {
         return facilityRepo.getAllByCategoriesIsInAndRegionIn(cats, regions);
     }
 
-    @PostMapping(path="/facility")
+    @PostMapping(path = "/facility")
     Facility addFacility(@RequestBody Facility facility) {
         return facilityRepo.save(facility);
     }
 
     @PutMapping(path = "/facility")
     Facility updateFacility(@RequestBody Facility facility) {
-        if(facilityRepo.findById(facility.get_id()).isPresent())
+        if (facilityRepo.findById(facility.get_id()).isPresent())
             return facilityRepo.save(facility);
 
         throw IswebapiApplication.valueError("No facility with id " + facility.get_id()).get();

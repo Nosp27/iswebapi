@@ -13,10 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -105,7 +103,7 @@ class FacilityControllerTest {
         f.setRegion(regionRepo.findById(referenceRegionId1)
                 .orElseThrow(IswebapiApplication.valueError("No expected region in database")));
         f.setCategories(categoryRepo.findAllByCatNameIn(Arrays.asList(cat1, cat2)));
-        f.setCoordinates(new double[]{-55.35, -43.66});
+        f.setCoordinates(-55.35, -43.66);
 
         Facility f2 = new Facility();
         f2.setName("Test Research center");
@@ -113,7 +111,7 @@ class FacilityControllerTest {
         f2.setRegion(regionRepo.findById(referenceRegionId2)
                 .orElseThrow(IswebapiApplication.valueError("No expected region in database")));
         f2.setCategories(categoryRepo.findAllByCatNameIn(Arrays.asList(cat1)));
-        f2.setCoordinates(new double[]{0.0, -0.3});
+        f2.setCoordinates(0.0, -0.3);
 
         // facilities are not in database
         Assert.assertFalse(facilityRepo.findById(f.get_id()).isPresent());
