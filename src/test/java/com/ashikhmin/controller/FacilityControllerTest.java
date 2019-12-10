@@ -84,10 +84,9 @@ class FacilityControllerTest {
 
         Region temp = new Region();
         temp.setRegionName(reg1);
-        temp.setRegionId(228);
         int referenceRegionId1 = regionRepo.save(temp).getRegionId();
+        temp = new Region();
         temp.setRegionName(reg2);
-        temp.setRegionId(2292);
         int referenceRegionId2 = regionRepo.save(temp).getRegionId();
 
         Category cat = new Category();
@@ -97,13 +96,13 @@ class FacilityControllerTest {
         categoryRepo.save(cat);
         //////////////////////////////
 
-        Facility f = new Facility();
-        f.setName("Test HSE Facility");
-        f.setDescription("Higher school of economics");
-        f.setRegion(regionRepo.findById(referenceRegionId1)
+        Facility f1 = new Facility();
+        f1.setName("Test HSE Facility");
+        f1.setDescription("Higher school of economics");
+        f1.setRegion(regionRepo.findById(referenceRegionId1)
                 .orElseThrow(IswebapiApplication.valueError("No expected region in database")));
-        f.setCategories(categoryRepo.findAllByCatNameIn(Arrays.asList(cat1, cat2)));
-        f.setCoordinates(-55.35, -43.66);
+        f1.setCategories(categoryRepo.findAllByCatNameIn(Arrays.asList(cat1, cat2)));
+        f1.setCoordinates(-55.35, -43.66);
 
         Facility f2 = new Facility();
         f2.setName("Test Research center");
@@ -114,14 +113,16 @@ class FacilityControllerTest {
         f2.setCoordinates(0.0, -0.3);
 
         // facilities are not in database
-        Assert.assertFalse(facilityRepo.findById(f.get_id()).isPresent());
+        Assert.assertFalse(facilityRepo.findById(f1.get_id()).isPresent());
         Assert.assertFalse(facilityRepo.findById(f2.get_id()).isPresent());
 
-        facilityRepo.save(f);
-        facilityRepo.save(f2);
+        int newFId = facilityRepo.save(f1).get_id();
+        int newF2Id = facilityRepo.save(f2).get_id();
+        f1.set_id(newFId);
+        f2.set_id(newF2Id);
 
         //facilities are in database
-        Assert.assertTrue(facilityRepo.findById(f.get_id()).isPresent());
+        Assert.assertTrue(facilityRepo.findById(f1.get_id()).isPresent());
         Assert.assertTrue(facilityRepo.findById(f2.get_id()).isPresent());
 
         // select by all regions and all categories
@@ -137,7 +138,7 @@ class FacilityControllerTest {
                         .contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(f.getName())))
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(f1.getName())))
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(f2.getName())));
 
         // select by all regions and all categories (with 'null' default criteria values)
@@ -150,7 +151,7 @@ class FacilityControllerTest {
                         .contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(f.getName())))
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(f1.getName())))
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(f2.getName())));
 
         // select by certain region and all categories
@@ -164,7 +165,7 @@ class FacilityControllerTest {
                         .contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString(f.getName()))))
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString(f1.getName()))))
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(f2.getName())));
 
         // select by certain region and non present in region category
@@ -178,7 +179,7 @@ class FacilityControllerTest {
                         .contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString(f.getName()))))
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString(f1.getName()))))
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString(f2.getName()))));
     }
 }
