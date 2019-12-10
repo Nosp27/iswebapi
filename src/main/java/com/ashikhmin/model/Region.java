@@ -5,12 +5,21 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-
 public class Region {
     @Id
     @GeneratedValue
     private int regionId;
     private String regionName;
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    private String imageUrl;
 
     public int getRegionId() {
         return regionId;
