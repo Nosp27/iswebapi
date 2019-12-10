@@ -18,9 +18,9 @@ public class BinaryDataController {
     ImageRepo imageRepo;
 
     @GetMapping(path = "/image/{img}")
-    byte[] getImage(@PathVariable("img") String img) {
+    @ResponseBody byte[] getImage(@PathVariable("img") String img) {
         return imageRepo.findById(img)
-                .orElseThrow(IswebapiApplication.valueError("No image at path " + img))
+                .orElseThrow(IswebapiApplication.valueError("No image with id " + img))
                 .getImageBinary();
     }
 
@@ -28,14 +28,14 @@ public class BinaryDataController {
     @Nullable
     Image addImage(@PathVariable("id") String id, @RequestBody String path) {
         Resource image = new ClassPathResource(path);
-        if(!image.exists())
+        if (!image.exists())
             throw IswebapiApplication.valueError("Image " + path + " does not exist").get();
 
-        if(!imageRepo.existsById(id)){
-            try (InputStream is = image.getInputStream()){
+        if (!imageRepo.existsById(id)) {
+            try (InputStream is = image.getInputStream()) {
                 byte[] imageBytes = new byte[is.available()];
                 int bytesRead = is.read(imageBytes);
-                if(bytesRead != imageBytes.length)
+                if (bytesRead != imageBytes.length)
                     throw IswebapiApplication.valueError("Byte lengths don't match").get();
                 return imageRepo.save(new Image(id, imageBytes));
             } catch (IOException e) {
