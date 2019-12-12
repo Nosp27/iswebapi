@@ -66,16 +66,16 @@ public class Facility {
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     @JoinTable(
             name = "facility_to_category",
-            joinColumns = @JoinColumn(name = "catName"),
-            inverseJoinColumns = @JoinColumn(name = "_id"))
+            joinColumns = @JoinColumn(name = "_id"),
+            inverseJoinColumns = @JoinColumn(name = "catName"))
     private Set<Category> categories;
 
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     @JoinTable(
             name = "facility_to_region",
-            joinColumns = @JoinColumn(name = "regionId"),
-            inverseJoinColumns = @JoinColumn(name = "_id"))
+            joinColumns = @JoinColumn(name = "_id"),
+            inverseJoinColumns = @JoinColumn(name = "regionId"))
     private Region region;
 
     public Double getLat() {

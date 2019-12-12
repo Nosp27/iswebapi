@@ -5,6 +5,7 @@ import com.ashikhmin.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,19 +24,25 @@ public class FacilityController {
     Iterable<Facility> getFacilities(@RequestBody FacilityCriterias criterias) {
         Set<Category> cats;
         Set<Region> regions;
-        if (criterias.getRegions() == null && criterias.getCategories() == null) {
+        boolean emptyRegions = isEmpty(criterias.getRegions());
+        boolean emptyCategories = isEmpty(criterias.getCategories());
+        if (emptyCategories && emptyRegions) {
             return facilityRepo.findAll();
         }
-        if (criterias.getCategories() == null) {
+        if (emptyCategories) {
             cats = new HashSet<>();
             categoryRepo.findAll().iterator().forEachRemaining(cats::add);
         } else cats = categoryRepo.findAllByCatNameIn(criterias.getCategories());
-        if (criterias.getRegions() == null) {
+        if (emptyRegions) {
             regions = new HashSet<>();
             regionRepo.findAll().iterator().forEachRemaining(regions::add);
         } else regions = regionRepo.getAllByRegionIdIn(criterias.getRegions());
 
         return facilityRepo.getAllByCategoriesIsInAndRegionIn(cats, regions);
+    }
+
+    private <T> boolean isEmpty(Collection<T> list) {
+        return list == null || list.isEmpty();
     }
 
     @PostMapping(path = "/facility")
