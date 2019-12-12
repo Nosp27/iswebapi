@@ -16,6 +16,23 @@ public class Facility {
     private String description;
     private Double lat;
     private Double lng;
+    private String imageUrl;
+
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+
+    public void setLng(Double lng) {
+        this.lng = lng;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     public int get_id() {
         return _id;
