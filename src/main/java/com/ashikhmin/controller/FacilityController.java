@@ -47,6 +47,8 @@ public class FacilityController {
 
     @PostMapping(path = "/facility")
     Facility addFacility(@RequestBody Facility facility) {
+        if(facilityRepo.existsById(facility.get_id()))
+            throw IswebapiApplication.valueError("Id exists. Trying to repeat primary key").get();
         return facilityRepo.save(facility);
     }
 
