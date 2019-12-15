@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class RegionController {
@@ -18,7 +19,7 @@ public class RegionController {
         return regionRepo.findById(id).orElseThrow(IswebapiApplication.valueError("No region with id " + id));
     }
 
-    @GetMapping(path="/regions")
+    @GetMapping(path = "/regions")
     Iterable<Region> listRegions() {
         return regionRepo.findAll();
     }
@@ -30,9 +31,8 @@ public class RegionController {
 
     @PutMapping(path = "/region")
     Region updateRegion(@RequestBody Region region) {
-        if(regionRepo.existsById(region.getRegionId()))
-            return regionRepo.save(region);
-
-        throw IswebapiApplication.valueError("No such region").get();
+        Region r = regionRepo.findById(region.getRegionId()).orElseThrow(IswebapiApplication.valueError("No such region"));
+        r.setRegionName(region.getRegionName());
+        return regionRepo.save(r);
     }
 }
