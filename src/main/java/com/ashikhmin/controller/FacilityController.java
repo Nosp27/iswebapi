@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 @RestController
 public class FacilityController {
@@ -19,6 +20,11 @@ public class FacilityController {
 
     @Autowired
     private RegionRepo regionRepo;
+
+    @GetMapping(path = "/facilities")
+    Iterable<Facility> getAllFacilities() {
+        return facilityRepo.findAll();
+    }
 
     @PostMapping(path = "/facilities")
     Iterable<Facility> getFacilities(@RequestBody FacilityCriterias criterias) {
@@ -47,17 +53,23 @@ public class FacilityController {
 
     @PostMapping(path = "/facility")
     Facility addFacility(@RequestBody Facility facility) {
-        if(facilityRepo.existsById(facility.get_id()))
+        if (facilityRepo.existsById(facility.get_id()))
             throw IswebapiApplication.valueError("Id exists. Trying to repeat primary key").get();
         return facilityRepo.save(facility);
     }
 
     @PutMapping(path = "/facility")
     Facility updateFacility(@RequestBody Facility facility) {
-        if (facilityRepo.findById(facility.get_id()).isPresent())
-            return facilityRepo.save(facility);
-
-        throw IswebapiApplication.valueError("No facility with id " + facility.get_id()).get();
+        Supplier<? extends RuntimeException> exceptionSupplier =
+                IswebapiApplication.valueError("No facility with id " + facility.get_id());
+        Facility dbFacility = facilityRepo.findById(facility.get_id()).orElseThrow(exceptionSupplier);
+        dbFacility.setName(facility.getName());
+        dbFacility.setDescription(facility.getDescription());
+        dbFacility.setLat(facility.getLat());
+        dbFacility.setLng(facility.getLng());
+        dbFacility.setRegion(regionRepo.findById(facility.getRegion().getRegionId()).orElseThrow(exceptionSupplier));
+        dbFacility.setCategories(facility.getCategories());
+        return facilityRepo.save(dbFacility);
     }
 
     @DeleteMapping(path = "/facility/{facilityId}")

@@ -1,155 +1,240 @@
-var allRegions;
+let allEntities = [];
+let allRegions = [];
+let allCategories = [];
+let allFacilities = [];
+let cls;
+
+read("/regions").then(x => allRegions = x);
+read("/categories").then(x => allCategories = x);
+read("/facilities").then(x => allFacilities = x);
 
 async function requestServer(suffix, method, entity) {
-    const response = await fetch(`/`+suffix, {
+    let reqProps = {
         method: method,
-        body: JSON.stringify(entity),
         headers: {
             'Content-Type': 'application/json'
         }
-    });
-    return await response.json(); //extract JSON from the http response
+    };
+    if (method !== "GET" && entity !== undefined)
+        reqProps["body"] = JSON.stringify(entity);
+    return (await fetch(suffix, reqProps)).json();
 }
 
-async function create(suffix) {
-    return await requestServer(suffix, "POST", this);
+async function create(suffix, entity) {
+    console.log("saving " + JSON.stringify(entity));
+    return await requestServer(suffix, "POST", entity);
 }
 
 async function read(suffix) {
     return await requestServer(suffix, "GET", null);
 }
 
-async function update(suffix) {
-    return await requestServer(suffix, "PUT", this);
+async function update(suffix, entity) {
+    return await requestServer(suffix, "PUT", entity);
 }
 
-function Region(regionName, regionId, imageUrl) {
-    this.regionName = regionName;
-    this.regionId = regionId;
-    this.imageUrl = imageUrl;
+async function deleteRequest(suffix, id) {
+    return await requestServer(suffix + "/"+id, "DELETE");
+}
 
-    function header() {
-        return regionName;
+class Region {
+    constructor({regionName, regionId, imageUrl}) {
+        this.regionName = regionName;
+        this.regionId = regionId;
+        this.imageUrl = imageUrl;
     }
 
-    function suffixPost() {
+    header() {
+        return this.regionName;
+    }
+
+    id() {
+        return this.regionId;
+    }
+
+    suffixPost() {
         return "/region";
     }
-
-    function suffixGet() {
-        return "/regions";
-    }
 }
 
-function Category(catName, imageUrl) {
-    this.catName = catName;
-    this.imageUrl = imageUrl;
-
-    function header() {
-        return catName;
+class Category {
+    constructor({catName, imageUrl}) {
+        this.catName = catName;
+        this.imageUrl = imageUrl;
     }
 
-    function suffixPost() {
+    id() {
+        return this.catName;
+    }
+
+    header() {
+        return this.catName;
+    }
+
+    suffixPost() {
         return "/category"
     }
-
-    function suffixGet() {
-        return "/categories"
-    }
 }
 
-function Facility(_id, name, description, lat, lng, imageUrl) {
-    this._id = _id;
-    this.name = name;
-    this.description = description;
-    this.lat = lat;
-    this.lng = lng;
-    this.imageUrl = imageUrl;
-
-    function header() {
-        return name;
+class Facility {
+    constructor({_id, name, description, lat, lng, imageUrl, categories, region}) {
+        this._id = _id;
+        this.name = name;
+        this.description = description;
+        this.lat = lat;
+        this.lng = lng;
+        this.imageUrl = imageUrl;
+        this.region = region;
+        this.categories = null;
     }
 
-    function suffixPost() {
+    id() {
+        return this._id;
+    }
+
+    header() {
+        return this.name;
+    }
+
+    suffixPost() {
         return "/facility";
     }
+}
 
-    function suffixGet() {
-        return "/facilities";
+class SingleSelectionDropdown {
+    constructor(sourceCls, entityIndex, fieldName, source) {
+        this.sourceCls = sourceCls;
+        this.entityIndex = entityIndex;
+        this.fieldName = fieldName;
+        this.source = source;
+    }
+
+    createDropDownCode() {
+        let contents = "";
+        for (let i = 0; i < this.source.length; i++) {
+            contents += this.createDropDownRow(this.source[i]);
+        }
+        let sourceItem = allEntities[this.entityIndex][this.fieldName];
+        let header = sourceItem == null ? "null" : new this.sourceCls(sourceItem).header();
+        return `
+<label>${this.fieldName}</label>
+    <div class="btn-group">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
+        id="${this.fieldName}Input" cv='${JSON.stringify(this.source[this.entityIndex])}'>${header}</button>
+    <div class="dropdown-menu">
+        ${contents}
+    </div>
+    </div>`;
+    }
+
+    createDropDownRow(value) {
+        return `
+<a class="dropdown-item" href="#" 
+onclick='SingleSelectionDropdown.onSelect(${this.entityIndex}, "${this.fieldName}", ${JSON.stringify(value)}, ${this.sourceCls})'>
+${new this.sourceCls(value).header()}</a>`;
+    }
+
+    static onSelect(entityIndex, fieldName, value, sourceCls) {
+        let field = document.getElementById(fieldName + "Input");
+        field.setAttribute("cv", JSON.stringify(value));
+        field.innerText = new sourceCls(value).header();
     }
 }
 
-function formList(regionsJson) {
+function formEntityList(entities) {
     let cards = "";
-    for (let i = 0; i < regionsJson.length; i++) {
-        cards += simpleListItem(regionsJson[i].header() + " # " + regionsJson[i].regionId, i);
+    for (let i = 0; i < entities.length; i++) {
+        cards += simpleListItem(entities[i], i);
     }
-    document.getElementById("regionList").innerHTML = cards
+    document.getElementById("entityList").innerHTML = cards;
 }
 
 function simpleListItem(content, index) {
-    return `<li class="nav-item"><button class="btn btn-primary" style="margin: 5px" onclick="formRegion(${index})">${content}</button></li>`
+    content = new cls(content);
+    return `<li class="nav-item"><button class="btn btn-primary" 
+style="margin: 5px" onclick="formEntity(${index})">${content.header()}</button>
+<button class="btn btn-danger" style="margin: 4px" 
+onclick="deleteRequest('${content.suffixPost()}', ${content.id()})">-
+</button></li>`
 }
 
-function formRegion(index) {
-    let region = allRegions[index];
-    document.getElementById("regionFormHolder").innerHTML = regionEditTemplate(region);
-}
-
-function regionEditTemplate(region) {
-    return `
-        <h3> Region #<span id="regionId">${region.regionId}</span></h3>
-        <form>
-          <div class="form-group">
-            <label for="regionNameInput">Region name</label>
-            <input type="input" class="form-control" id="regionNameInput" placeholder="enter region name"
-            value="${region.regionName}">
-          </div>
-          <button type="submit" class="btn btn-primary" onclick="editRegion()">Save</button>
-        </form>`
-}
-
-
-async function getRegions() {
-    const response = await fetch(`/regions`);
-    allRegions = await response.json(); //extract JSON from the http response
-    return allRegions;
-}
-
-async function editRegion() {
-    const response = await fetch(`/region`, {
-        method: 'PUT',
-        body: JSON.stringify({
-            "regionId": document.getElementById("regionId").innerHTML,
-            "regionName": document.getElementById("regionNameInput").value,
-            "imageUrl": "null"
-        }), // string or object
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-    const myJson = await response.json(); //extract JSON from the http response
-    // do something with myJson
-    console.log("edited: " + myJson);
-}
-
-function descriptionEditor(propertyName) {
-    return '<label for="regionDescInput">Region description</label>' +
-        '<textarea class="form-control" placeholder="enter region description"></textarea>';
+function formEntity(index) {
+    let entity = allEntities[index];
+    document.getElementById("entityFormHolder").innerHTML = getEditingArea(entity);
 }
 
 function getEditingArea(entity) {
     let code = "";
-    for (let i = 0; i < entity.length; i++) {
-        property = entity[i];
-        switch (property) {
-            case "desc":
-                code += descriptionEditor(property.name);
-                break;
-            case "text":
-                code += textEditor();
-        }
+    let index = allEntities.indexOf(entity);
+    let properties = Object.getOwnPropertyNames(entity);
+    code += createHeader(entity);
+    for (let i = 0; i < properties.length; i++) {
+        let property = properties[i];
+        let value = entity[property];
+
+        code += (property.includes("region") && entity._id !== undefined) ?
+            new SingleSelectionDropdown(Region, index, "region", allRegions).createDropDownCode()
+            : createTextEditor(property, value);
     }
+    code += createSubmitButton();
+    code += createFooter(entity);
+    return code;
 }
 
-getRegions().then(formList);
+async function captureEntity() {
+    let ret = {};
+    let properties = Object.getOwnPropertyNames(new cls({}));
+    for (let i = 0; i < properties.length; i++) {
+        let property = properties[i];
+        let element = document.getElementById(property + "Input");
+        let value;
+        if (element.tagName === "INPUT")
+            value = element.value;
+        else if (element.tagName === "BUTTON")
+            value = JSON.parse(element.getAttribute("cv"));
+        else value = null;
+
+        if (value === "null")
+            value = null;
+
+        ret[property] = value;
+    }
+    let retx = new cls(ret);
+    return await update(retx.suffixPost(), retx);
+}
+
+function createHeader(entity) {
+    return `<h3> ${new cls(entity).header()} #<span id="ID">${new cls(entity).id()}</span></h3>`
+}
+
+function createDescriptionEditor(propertyName) {
+    return '<label for="regionDescInput">Region description</label>' +
+        '<textarea class="form-control" placeholder="enter region description"></textarea>';
+}
+
+function createTextEditor(property, value) {
+    let id = property + "Input";
+    return `<label for="${id}">${property}</label> <input type="text" class="form-control" id="${id}" placeholder="enter region name" value="${value}">`;
+}
+
+function createSubmitButton() {
+    return `<button type="submit" class="btn btn-primary" onclick="captureEntity()">Save</button>`
+}
+
+function createFooter() {
+    return `</form>`;
+}
+
+function workWithEntities(_cls) {
+    allEntities = [];
+    document.getElementById("entityFormHolder").innerHTML = "";
+    cls = _cls;
+    if (cls === Region) {
+        allEntities = allRegions;
+    }
+    else if (cls === Category)
+        allEntities = allCategories;
+    else if (cls === Facility)
+        allEntities = allFacilities;
+    formEntityList(allEntities.map (x => new cls(x)));
+}
