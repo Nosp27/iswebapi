@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 import java.util.Set;
 
-public interface CategoryRepo extends CrudRepository<Category, String> {
+public interface CategoryRepo extends CrudRepository<Category, Integer> {
     Set<Category> findAllByCatNameIn(List<String> iterable);
 }

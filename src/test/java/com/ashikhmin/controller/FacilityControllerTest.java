@@ -82,6 +82,9 @@ class FacilityControllerTest {
         final String reg1 = "Mooxosransk";
         final String reg2 = "Ulan-Ude";
 
+        final Integer catId1;
+        final Integer catId2;
+
         Region temp = new Region();
         temp.setRegionName(reg1);
         int referenceRegionId1 = regionRepo.save(temp).getRegionId();
@@ -91,9 +94,10 @@ class FacilityControllerTest {
 
         Category cat = new Category();
         cat.setCatName(cat1);
-        categoryRepo.save(cat);
+        catId1 = categoryRepo.save(cat).getCatId();
+        cat = new Category();
         cat.setCatName(cat2);
-        categoryRepo.save(cat);
+        catId2 = categoryRepo.save(cat).getCatId();
         //////////////////////////////
 
         Facility f1 = new Facility();
@@ -128,7 +132,7 @@ class FacilityControllerTest {
         // select by all regions and all categories
         FacilityCriterias criterias = new FacilityCriterias();
         criterias.setRegions(Arrays.asList(referenceRegionId1, referenceRegionId2));
-        criterias.setCategories(Arrays.asList(cat1, cat2));
+        criterias.setCategories(Arrays.asList(catId1, catId2));
         String criteriasJson = mapper.writeValueAsString(criterias);
         mvc.perform(
                 MockMvcRequestBuilders
@@ -157,7 +161,7 @@ class FacilityControllerTest {
         // select by certain region and all categories
         criterias = new FacilityCriterias();
         criterias.setRegions(Arrays.asList(referenceRegionId2));
-        criterias.setCategories(Arrays.asList(cat1, cat2));
+        criterias.setCategories(Arrays.asList(catId1, catId2));
         mvc.perform(
                 MockMvcRequestBuilders
                         .post("/facilities")
@@ -171,7 +175,7 @@ class FacilityControllerTest {
         // select by certain region and non present in region category
         criterias = new FacilityCriterias();
         criterias.setRegions(Arrays.asList(referenceRegionId2));
-        criterias.setCategories(Arrays.asList(cat2));
+        criterias.setCategories(Arrays.asList(catId2));
         mvc.perform(
                 MockMvcRequestBuilders
                         .post("/facilities")

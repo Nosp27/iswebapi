@@ -3,11 +3,11 @@ package com.ashikhmin.controller;
 import java.util.List;
 
 public class FacilityCriterias {
-    public List<String> getCategories() {
+    public List<Integer> getCategories() {
         return categories;
     }
 
-    public void setCategories(List<String> categories) {
+    public void setCategories(List<Integer> categories) {
         this.categories = categories;
     }
 
@@ -19,6 +19,6 @@ public class FacilityCriterias {
         this.regions = regions;
     }
 
-    private List<String> categories;
+    private List<Integer> categories;
     private List<Integer> regions;
 }

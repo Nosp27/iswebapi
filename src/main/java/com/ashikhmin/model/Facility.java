@@ -84,11 +84,10 @@ public class Facility {
     @JoinTable(
             name = "facility_to_category",
             joinColumns = @JoinColumn(name = "_id"),
-            inverseJoinColumns = @JoinColumn(name = "catName"))
+            inverseJoinColumns = @JoinColumn(name = "cat_id"))
     private Set<Category> categories;
 
     @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     @JoinTable(
             name = "facility_to_region",
             joinColumns = @JoinColumn(name = "_id"),

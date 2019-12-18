@@ -35,10 +35,10 @@ public class FacilityController {
         if (emptyCategories && emptyRegions) {
             return facilityRepo.findAll();
         }
+        cats = new HashSet<>();
         if (emptyCategories) {
-            cats = new HashSet<>();
             categoryRepo.findAll().iterator().forEachRemaining(cats::add);
-        } else cats = categoryRepo.findAllByCatNameIn(criterias.getCategories());
+        } else categoryRepo.findAllById(criterias.getCategories()).forEach(cats::add);
         if (emptyRegions) {
             regions = new HashSet<>();
             regionRepo.findAll().iterator().forEachRemaining(regions::add);
