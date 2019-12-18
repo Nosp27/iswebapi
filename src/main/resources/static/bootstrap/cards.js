@@ -4,9 +4,9 @@ let allCategories = [];
 let allFacilities = [];
 let cls;
 
-read("/regions").then(x => allRegions = x);
-read("/categories").then(x => allCategories = x);
-read("/facilities").then(x => allFacilities = x);
+function nullate(obj) {
+
+}
 
 async function requestServer(suffix, method, entity) {
     let reqProps = {
@@ -22,7 +22,9 @@ async function requestServer(suffix, method, entity) {
 
 async function create(suffix, entity) {
     console.log("saving " + JSON.stringify(entity));
-    return await requestServer(suffix, "POST", entity);
+    let ret = await requestServer(suffix, "POST", entity);
+    await workWithEntities(cls);
+    return ret;
 }
 
 async function read(suffix) {
@@ -30,11 +32,14 @@ async function read(suffix) {
 }
 
 async function update(suffix, entity) {
-    return await requestServer(suffix, "PUT", entity);
+    let ret = await requestServer(suffix, "PUT", entity);
+    await workWithEntities(cls);
+    return ret;
 }
 
 async function deleteRequest(suffix, id) {
-    return await requestServer(suffix + "/"+id, "DELETE");
+    await requestServer(suffix + "/" + id, "DELETE");
+    await workWithEntities(cls);
 }
 
 class Region {
@@ -42,6 +47,7 @@ class Region {
         this.regionName = regionName;
         this.regionId = regionId;
         this.imageUrl = imageUrl;
+        nullate(this)
     }
 
     header() {
@@ -58,13 +64,18 @@ class Region {
 }
 
 class Category {
-    constructor({catName, imageUrl}) {
+    constructor({catId, catName, imageUrl}) {
+        if (catId === undefined)
+            this.catId = 0;
+        else
+            this.catId = catId;
         this.catName = catName;
         this.imageUrl = imageUrl;
+        nullate(this)
     }
 
     id() {
-        return this.catName;
+        return this.catId;
     }
 
     header() {
@@ -86,6 +97,7 @@ class Facility {
         this.imageUrl = imageUrl;
         this.region = region;
         this.categories = null;
+        nullate(this)
     }
 
     id() {
@@ -118,7 +130,7 @@ class SingleSelectionDropdown {
         let header = sourceItem == null ? "null" : new this.sourceCls(sourceItem).header();
         return `
 <label>${this.fieldName}</label>
-    <div class="btn-group">
+    <div class="btn-group" style="margin: 10px 5px 5px;">
         <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
         id="${this.fieldName}Input" cv='${JSON.stringify(this.source[this.entityIndex])}'>${header}</button>
     <div class="dropdown-menu">
@@ -146,6 +158,7 @@ function formEntityList(entities) {
     for (let i = 0; i < entities.length; i++) {
         cards += simpleListItem(entities[i], i);
     }
+    cards += createAddButton();
     document.getElementById("entityList").innerHTML = cards;
 }
 
@@ -154,7 +167,7 @@ function simpleListItem(content, index) {
     return `<li class="nav-item"><button class="btn btn-primary" 
 style="margin: 5px" onclick="formEntity(${index})">${content.header()}</button>
 <button class="btn btn-danger" style="margin: 4px" 
-onclick="deleteRequest('${content.suffixPost()}', ${content.id()})">-
+onclick="deleteRequest('${content.suffixPost()}', '${content.id()}')">-
 </button></li>`
 }
 
@@ -188,16 +201,20 @@ async function captureEntity() {
         let property = properties[i];
         let element = document.getElementById(property + "Input");
         let value;
-        if (element.tagName === "INPUT")
-            value = element.value;
-        else if (element.tagName === "BUTTON")
-            value = JSON.parse(element.getAttribute("cv"));
-        else value = null;
+        try {
+            if (element.tagName === "INPUT")
+                value = element.value;
+            else if (element.tagName === "BUTTON")
+                value = JSON.parse(element.getAttribute("cv"));
+            else value = null;
 
-        if (value === "null")
-            value = null;
+            if (value === "null")
+                value = null;
 
-        ret[property] = value;
+            ret[property] = value;
+        } catch (e) {
+            console.debug(`${element.id}: ${element.tagName}`);
+        }
     }
     let retx = new cls(ret);
     return await update(retx.suffixPost(), retx);
@@ -214,27 +231,39 @@ function createDescriptionEditor(propertyName) {
 
 function createTextEditor(property, value) {
     let id = property + "Input";
-    return `<label for="${id}">${property}</label> <input type="text" class="form-control" id="${id}" placeholder="enter region name" value="${value}">`;
+    return `<label for="${id}" style="margin-top: 10px">${property}</label> <input type="text" class="form-control" id="${id}" placeholder="enter ${property}" value="${value}">`;
 }
 
 function createSubmitButton() {
     return `<button type="submit" class="btn btn-primary" onclick="captureEntity()">Save</button>`
 }
 
+function createAddButton() {
+    return `<li class="nav-item"><button class="btn btn-secondary" 
+style="margin: 5px" onclick="addEntity()">Add new Entity</button></li>`
+}
+
+function addEntity() {
+    let obj = new cls({});
+    create(obj.suffixPost(), obj);
+}
+
 function createFooter() {
     return `</form>`;
 }
 
-function workWithEntities(_cls) {
+async function workWithEntities(_cls) {
+    await read("/regions").then(x => allRegions = x);
+    await read("/categories").then(x => allCategories = x);
+    await read("/facilities").then(x => allFacilities = x);
     allEntities = [];
     document.getElementById("entityFormHolder").innerHTML = "";
     cls = _cls;
     if (cls === Region) {
         allEntities = allRegions;
-    }
-    else if (cls === Category)
+    } else if (cls === Category)
         allEntities = allCategories;
     else if (cls === Facility)
         allEntities = allFacilities;
-    formEntityList(allEntities.map (x => new cls(x)));
+    formEntityList(allEntities.map(x => new cls(x)));
 }

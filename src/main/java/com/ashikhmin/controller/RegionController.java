@@ -1,6 +1,7 @@
 package com.ashikhmin.controller;
 
 import com.ashikhmin.iswebapi.IswebapiApplication;
+import com.ashikhmin.model.Facility;
 import com.ashikhmin.model.Region;
 import com.ashikhmin.model.RegionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +35,14 @@ public class RegionController {
         Region r = regionRepo.findById(region.getRegionId()).orElseThrow(IswebapiApplication.valueError("No such region"));
         r.setRegionName(region.getRegionName());
         return regionRepo.save(r);
+    }
+
+    @DeleteMapping("/region/{regionId}")
+    Region deleteRegion(@PathVariable(name = "regionId") Integer regionId) {
+        Region region =
+                regionRepo.findById(regionId)
+                        .orElseThrow(IswebapiApplication.valueError("No region with id " + regionId));
+        regionRepo.delete(region);
+        return region;
     }
 }
