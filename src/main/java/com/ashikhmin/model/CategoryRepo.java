@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.Set;
 
 public interface CategoryRepo extends CrudRepository<Category, Integer> {
-    Set<Category> findAllByCatNameIn(List<String> iterable);
+    Set<Category> findAllByCatIdIn(List<Integer> catIds);
 }
