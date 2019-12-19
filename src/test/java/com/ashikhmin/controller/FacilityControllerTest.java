@@ -105,7 +105,6 @@ class FacilityControllerTest {
         f1.setDescription("Higher school of economics");
         f1.setRegion(regionRepo.findById(referenceRegionId1)
                 .orElseThrow(IswebapiApplication.valueError("No expected region in database")));
-        f1.setCategories(categoryRepo.findAllByCatNameIn(Arrays.asList(cat1, cat2)));
         f1.setCoordinates(-55.35, -43.66);
 
         Facility f2 = new Facility();
@@ -113,7 +112,6 @@ class FacilityControllerTest {
         f2.setDescription("Test research facility");
         f2.setRegion(regionRepo.findById(referenceRegionId2)
                 .orElseThrow(IswebapiApplication.valueError("No expected region in database")));
-        f2.setCategories(categoryRepo.findAllByCatNameIn(Arrays.asList(cat1)));
         f2.setCoordinates(0.0, -0.3);
 
         // facilities are not in database
