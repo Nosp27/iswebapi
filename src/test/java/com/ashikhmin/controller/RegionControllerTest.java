@@ -1,10 +1,7 @@
 package com.ashikhmin.controller;
 
 import com.ashikhmin.iswebapi.IswebapiApplication;
-import com.ashikhmin.model.Category;
-import com.ashikhmin.model.CategoryRepo;
-import com.ashikhmin.model.FacilityRepo;
-import com.ashikhmin.model.RegionRepo;
+import com.ashikhmin.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -24,23 +21,15 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = IswebapiApplication.class)
 @AutoConfigureMockMvc
-class CategoryControllerTest {
+class RegionControllerTest {
     @Autowired
     PlatformTransactionManager transactionManager;
 
     @Autowired
-    FacilityRepo facilityRepo;
-
-    @Autowired
     RegionRepo regionRepo;
-
-    @Autowired
-    CategoryRepo categoryRepo;
 
     MockMvc mvc;
 
@@ -55,74 +44,76 @@ class CategoryControllerTest {
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
-    Category createCategory(String catName, boolean save) {
-        Category tempCategory = new Category();
-        tempCategory.setCatName(catName);
-        return save ? categoryRepo.save(tempCategory) : tempCategory;
+    Region createRegion(String regionName, boolean save) {
+        Region tempRegion = new Region();
+        tempRegion.setRegionName(regionName);
+        return save ? regionRepo.save(tempRegion) : tempRegion;
     }
 
     @Test
     @Transactional
-    void testAddCategory() throws Exception {
-        String categoryName = "somcatname";
-        Category testCategory = createCategory(categoryName, false);
-        long databaseSize = categoryRepo.count();
+    void testAddRegion() throws Exception {
+        String regionName = "somregionname";
+        Region testRegion = createRegion(regionName, false);
+        long databaseSize = regionRepo.count();
         mvc.perform(
                 MockMvcRequestBuilders
-                        .post("/category")
+                        .post("/region")
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(testCategory)))
+                        .content(mapper.writeValueAsString(testRegion)))
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(categoryName)));
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(regionName)));
 
-        Assert.assertEquals(databaseSize + 1L, categoryRepo.count());
+        Assert.assertEquals(databaseSize + 1L, regionRepo.count());
     }
 
     @Test
     @Transactional
-    void testGetCategory() throws Exception {
-        String categoryName = "somecat";
-        Category tempCategory = createCategory(categoryName, true);
+    void testGetRegion() throws Exception {
+        String regionName = "someregion";
+        Region tempRegion = createRegion(regionName, true);
         mvc.perform(
                 MockMvcRequestBuilders
-                        .get("/category/" + tempCategory.getCatId())
+                        .get("/region" + "/" + tempRegion.getRegionId())
                         .contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(categoryName)));
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(regionName)));
 
         mvc.perform(
                 MockMvcRequestBuilders
-                        .get("/categories/")
+                        .get("/regions/")
                         .contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(categoryName)));
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(regionName)));
     }
 
     @Test
     @Transactional
-    void testUpdateCategory() throws Exception {
-        String categoryName = "somecat";
+    void testUpdateRegion() throws Exception {
+        String regionName = "somecat";
         String changedName = "somenewname";
-        Category tempCategory = createCategory(categoryName, true);
-        Category changedCategory = createCategory(changedName, false);
-        changedCategory.setCatId(tempCategory.getCatId());
+        Region tempRegion = createRegion(regionName, true);
+        Region changedRegion = createRegion(changedName, false);
+        changedRegion.setRegionId(tempRegion.getRegionId());
 
         mvc.perform(
                 MockMvcRequestBuilders
-                        .put("/category")
+                        .put("/region")
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(changedCategory)))
+                        .content(mapper.writeValueAsString(changedRegion)))
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(changedName)));
     }
 
     @Test
     @Transactional
-    void testDeleteCategory() throws Exception {
-        Category tempCategory = createCategory("somenonexistentcategory", true);
+    void testDeleteRegion() throws Exception {
+        Region tempRegion = createRegion("somenonexistentregion" +
+                "", true);
         mvc.perform(
                 MockMvcRequestBuilders
-                        .delete("/category/" + tempCategory.getCatId())
+                        .delete("/region" +
+                                "/" + tempRegion.getRegionId())
                         .contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(tempCategory.getCatName())));
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(tempRegion.getRegionName())));
 
-        Assert.assertFalse(categoryRepo.existsById(tempCategory.getCatId()));
+        Assert.assertFalse(regionRepo.existsById(tempRegion.getRegionId()));
     }
 }
