@@ -28,21 +28,26 @@ public class FacilityController {
 
     @PostMapping(path = "/facilities")
     Iterable<Facility> getFacilities(@RequestBody FacilityCriterias criterias) {
-        Set<Category> cats;
-        Set<Region> regions;
         boolean emptyRegions = isEmpty(criterias.getRegions());
         boolean emptyCategories = isEmpty(criterias.getCategories());
         if (emptyCategories && emptyRegions) {
             return facilityRepo.findAll();
         }
-        cats = new HashSet<>();
-        if (emptyCategories) {
-            categoryRepo.findAll().iterator().forEachRemaining(cats::add);
-        } else categoryRepo.findAllById(criterias.getCategories()).forEach(cats::add);
-        if (emptyRegions) {
+        Set<Category> cats = null;
+        Set<Region> regions = null;
+        if (!emptyCategories) {
+            cats = new HashSet<>();
+            categoryRepo.findAllById(criterias.getCategories()).forEach(cats::add);
+        }
+        if(!emptyRegions) {
             regions = new HashSet<>();
-            regionRepo.findAll().iterator().forEachRemaining(regions::add);
-        } else regions = regionRepo.getAllByRegionIdIn(criterias.getRegions());
+            regionRepo.findAllById(criterias.getRegions()).forEach(regions::add);
+        }
+
+        if (emptyCategories)
+            return facilityRepo.getAllByRegionIn(regionRepo.getAllByRegionIdIn(criterias.getRegions()));
+        if (emptyRegions)
+            return facilityRepo.getAllByCategoriesIn(cats);
 
         return facilityRepo.getAllByCategoriesIsInAndRegionIn(cats, regions);
     }
