@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+@CrossOrigin
 @RestController
 public class BinaryDataController {
     @Autowired
