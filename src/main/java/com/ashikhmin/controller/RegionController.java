@@ -1,14 +1,10 @@
 package com.ashikhmin.controller;
 
 import com.ashikhmin.iswebapi.IswebapiApplication;
-import com.ashikhmin.model.Facility;
 import com.ashikhmin.model.Region;
 import com.ashikhmin.model.RegionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -20,7 +16,6 @@ public class RegionController {
     Region getRegion(@PathVariable("id") int id) {
         return regionRepo.findById(id).orElseThrow(IswebapiApplication.valueErrorSupplier("No region with id " + id));
     }
-
     @GetMapping(path = "/regions")
     Iterable<Region> listRegions() {
         return regionRepo.findAll();
