@@ -84,7 +84,7 @@ class FacilityControllerTest {
         facility.setDescription(description);
         if (regionId != null)
             facility.setRegion(regionRepo.findById(regionId)
-                    .orElseThrow(IswebapiApplication.valueError("No expected region in database")));
+                    .orElseThrow(IswebapiApplication.valueErrorSupplier("No expected region in database")));
         if (cats != null)
             facility.setCategories(categoryRepo.findAllByCatIdIn(Arrays.asList(cats)));
         facility.setCoordinates(-55.35, -43.66);

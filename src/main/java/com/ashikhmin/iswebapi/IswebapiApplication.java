@@ -18,7 +18,11 @@ public class IswebapiApplication {
         SpringApplication.run(IswebapiApplication.class, args);
     }
 
-    public static Supplier<RuntimeException> valueError(String message) {
-        return () -> new RuntimeException(message);
+    public static Supplier<RuntimeException> valueErrorSupplier(String message) {
+        return () -> valueError(message);
+    }
+
+    public static RuntimeException valueError(String message) {
+        return new RuntimeException(message);
     }
 }

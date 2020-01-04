@@ -60,14 +60,14 @@ public class FacilityController {
     @PostMapping(path = "/facility")
     Facility addFacility(@RequestBody Facility facility) {
         if (facilityRepo.existsById(facility.get_id()))
-            throw IswebapiApplication.valueError("Id exists. Trying to repeat primary key").get();
+            throw IswebapiApplication.valueErrorSupplier("Id exists. Trying to repeat primary key").get();
         return facilityRepo.save(facility);
     }
 
     @PutMapping(path = "/facility")
     Facility updateFacility(@RequestBody Facility facility) {
         Supplier<? extends RuntimeException> exceptionSupplier =
-                IswebapiApplication.valueError("No facility with id " + facility.get_id());
+                IswebapiApplication.valueErrorSupplier("No facility with id " + facility.get_id());
         Facility dbFacility = facilityRepo.findById(facility.get_id()).orElseThrow(exceptionSupplier);
         dbFacility.setName(facility.getName());
         dbFacility.setDescription(facility.getDescription());
@@ -82,7 +82,7 @@ public class FacilityController {
     Facility deleteFacility(@PathVariable int facilityId) {
         Facility facility =
                 facilityRepo.findById(facilityId)
-                        .orElseThrow(IswebapiApplication.valueError("No facility with id " + facilityId));
+                        .orElseThrow(IswebapiApplication.valueErrorSupplier("No facility with id " + facilityId));
         facilityRepo.delete(facility);
         return facility;
     }

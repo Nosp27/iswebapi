@@ -14,7 +14,7 @@ public class CategoryController {
 
     @GetMapping(path = "/category/{catId}")
     Category getCategory(@PathVariable("catId") Integer catId) {
-        return categoryRepo.findById(catId).orElseThrow(IswebapiApplication.valueError("No category " + catId));
+        return categoryRepo.findById(catId).orElseThrow(IswebapiApplication.valueErrorSupplier("No category " + catId));
     }
 
     @PostMapping(path = "/category")
@@ -31,7 +31,7 @@ public class CategoryController {
     Category updateCategory(@RequestBody Category category) {
         Integer catId = category.getCatId();
         Category dbCat = categoryRepo.findById(catId)
-                .orElseThrow(IswebapiApplication.valueError("No category " + catId));
+                .orElseThrow(IswebapiApplication.valueErrorSupplier("No category " + catId));
         dbCat.setCatName(category.getCatName());
         return categoryRepo.save(category);
     }
@@ -39,7 +39,7 @@ public class CategoryController {
     @DeleteMapping(path = "/category/{catId}")
     Category deleteCategory(@PathVariable(name = "catId") Integer catId) {
         Category cat = categoryRepo.findById(catId)
-                .orElseThrow(IswebapiApplication.valueError("No such category (" + catId + ")"));
+                .orElseThrow(IswebapiApplication.valueErrorSupplier("No such category (" + catId + ")"));
         categoryRepo.deleteById(catId);
         return cat;
     }

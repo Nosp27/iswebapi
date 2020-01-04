@@ -18,7 +18,7 @@ public class RegionController {
 
     @GetMapping(path = "/region/{id}")
     Region getRegion(@PathVariable("id") int id) {
-        return regionRepo.findById(id).orElseThrow(IswebapiApplication.valueError("No region with id " + id));
+        return regionRepo.findById(id).orElseThrow(IswebapiApplication.valueErrorSupplier("No region with id " + id));
     }
 
     @GetMapping(path = "/regions")
@@ -33,7 +33,7 @@ public class RegionController {
 
     @PutMapping(path = "/region")
     Region updateRegion(@RequestBody Region region) {
-        Region r = regionRepo.findById(region.getRegionId()).orElseThrow(IswebapiApplication.valueError("No such region"));
+        Region r = regionRepo.findById(region.getRegionId()).orElseThrow(IswebapiApplication.valueErrorSupplier("No such region"));
         r.setRegionName(region.getRegionName());
         return regionRepo.save(r);
     }
@@ -42,7 +42,7 @@ public class RegionController {
     Region deleteRegion(@PathVariable(name = "regionId") Integer regionId) {
         Region region =
                 regionRepo.findById(regionId)
-                        .orElseThrow(IswebapiApplication.valueError("No region with id " + regionId));
+                        .orElseThrow(IswebapiApplication.valueErrorSupplier("No region with id " + regionId));
         regionRepo.delete(region);
         return region;
     }
