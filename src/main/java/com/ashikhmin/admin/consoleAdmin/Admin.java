@@ -78,7 +78,7 @@ public final class Admin {
                         f.setLat(x.get(0));
                         f.setLng(x.get(1));
                     });
-            enterProperty("Image", x -> x, f::setImageUrl);
+            enterProperty("Image", Integer::parseInt, f::setImageId);
             send(f, "/facility");
             System.out.println("Fine");
             return f;
@@ -93,7 +93,7 @@ public final class Admin {
         try {
             enterProperty("Id", Integer::parseInt, ret::setRegionId);
             enterProperty("Name", x -> x, ret::setRegionName);
-            enterProperty("Image", x -> x, ret::setImageUrl);
+            enterProperty("Image", Integer::parseInt, ret::setImageId);
             send(ret, "/region");
             System.out.println("Fine");
             return ret;
@@ -107,7 +107,7 @@ public final class Admin {
         Category ret = new Category();
         try {
             enterProperty("Name", x -> x, ret::setCatName);
-            enterProperty("Image", x -> x, ret::setImageUrl);
+            enterProperty("Image", Integer::parseInt, ret::setImageId);
             send(ret, "/category");
             System.out.println("Fine");
             return ret;
