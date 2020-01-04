@@ -1,19 +1,21 @@
 package com.ashikhmin.model;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
 public class Image {
     @Id
-    private String imageId;
+    @GeneratedValue
+    private int imageId;
     private byte[] imageBinary;
 
-    public String getImageId() {
+    public int getImageId() {
         return imageId;
     }
 
-    public void setImageId(String imageId) {
+    public void setImageId(int imageId) {
         this.imageId = imageId;
     }
 
@@ -27,8 +29,7 @@ public class Image {
 
     public Image(){}
 
-    public Image(String id, byte[] array) {
-        imageId = id;
+    public Image(byte[] array) {
         imageBinary = array;
     }
 }

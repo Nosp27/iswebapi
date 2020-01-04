@@ -7,12 +7,12 @@ import javax.persistence.ManyToMany;
 import java.util.Set;
 
 @Entity
-public class Category {
+public class Category implements HasImage {
     @Id
     @GeneratedValue
     private Integer catId;
     private String catName;
-    private String imageUrl;
+    private Integer imageId;
 
     public Integer getCatId() {
         return catId;
@@ -22,12 +22,12 @@ public class Category {
         this.catId = catId;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public Integer getImageId() {
+        return imageId;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImageId(Integer imageId) {
+        this.imageId = imageId;
     }
 
     @ManyToMany(mappedBy = "categories")

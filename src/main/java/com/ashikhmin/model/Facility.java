@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-public class Facility {
+public class Facility implements HasImage {
     @Id
     @GeneratedValue
     private int _id;
@@ -16,7 +16,7 @@ public class Facility {
     private String description;
     private Double lat;
     private Double lng;
-    private String imageUrl;
+    private Integer imageId;
 
     public void setLat(Double lat) {
         this.lat = lat;
@@ -26,12 +26,12 @@ public class Facility {
         this.lng = lng;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public Integer getImageId() {
+        return imageId;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImageId(Integer imageId) {
+        this.imageId = imageId;
     }
 
     public int get_id() {
