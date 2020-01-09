@@ -22,6 +22,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
@@ -97,7 +98,8 @@ class BinaryDataControllerTest {
                         .post(String.format(
                                 "/image/add/for_entity/%d/%d", EntityEnum.REGION.getIndex(), region.getRegionId()
                         ))
-                        .content(img.getImageBinary()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(Arrays.toString(img.getImageBinary())))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn().getResponse().getContentAsString();
         Assert.assertTrue(imageRepo.findById(img.getImageId()).isPresent());
@@ -126,7 +128,9 @@ class BinaryDataControllerTest {
                         .post(String.format(
                                 "/image/add/for_entity/%d/%d", EntityEnum.REGION.getIndex(), region.getRegionId()
                         ))
-                        .content(imageChanged.getImageBinary()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(Arrays.toString(imageChanged.getImageBinary())))
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn().getResponse().getContentAsString();
         Assert.assertFalse(imageRepo.findById(img.getImageId()).isPresent());
 
