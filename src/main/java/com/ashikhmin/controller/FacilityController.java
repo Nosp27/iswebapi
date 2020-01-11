@@ -40,7 +40,7 @@ public class FacilityController {
             cats = new HashSet<>();
             categoryRepo.findAllById(criterias.getCategories()).forEach(cats::add);
         }
-        if(!emptyRegions) {
+        if (!emptyRegions) {
             regions = new HashSet<>();
             regionRepo.findAllById(criterias.getRegions()).forEach(regions::add);
         }
@@ -59,6 +59,9 @@ public class FacilityController {
 
     @PostMapping(path = "/facility")
     Facility addFacility(@RequestBody Facility facility) {
+        if (facility == null) {
+            return facilityRepo.save(new Facility());
+        }
         if (facilityRepo.existsById(facility.get_id()))
             throw IswebapiApplication.valueErrorSupplier("Id exists. Trying to repeat primary key").get();
         return facilityRepo.save(facility);
@@ -73,7 +76,8 @@ public class FacilityController {
         dbFacility.setDescription(facility.getDescription());
         dbFacility.setLat(facility.getLat());
         dbFacility.setLng(facility.getLng());
-        dbFacility.setRegion(regionRepo.findById(facility.getRegion().getRegionId()).orElseThrow(exceptionSupplier));
+        if (dbFacility.getRegion() != null)
+            dbFacility.setRegion(regionRepo.findById(facility.getRegion().getRegionId()).orElseThrow(exceptionSupplier));
         dbFacility.setCategories(facility.getCategories());
         return facilityRepo.save(dbFacility);
     }

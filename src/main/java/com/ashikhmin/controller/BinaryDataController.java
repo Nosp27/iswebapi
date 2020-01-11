@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -28,7 +30,14 @@ public class BinaryDataController {
     @Autowired
     CategoryRepo categoryRepo;
 
-    @GetMapping(path = "/image/{img}")
+    static byte[] byteArrayListToPrimitive(ArrayList<Byte> byteList) {
+        byte[] ret = new byte[byteList.size()];
+        for(int i = 0; i < ret.length; i++)
+            ret[i] = byteList.get(i);
+        return ret;
+    }
+
+    @GetMapping(path = "/image/{img}", produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseBody
     byte[] getImage(@PathVariable("img") int img) {
         return imageRepo.findById(img)
@@ -61,13 +70,14 @@ public class BinaryDataController {
     }
 
     @PostMapping(path = "/image/add/for_entity/{entity_index}/{id}")
-    int addImageForEntity(
+    String addImageForEntity(
             @PathVariable("entity_index") int entityIndex,
             @PathVariable("id") int id,
-            @RequestBody byte[] imageData) {
+            @RequestBody ArrayList<Byte> imageReceivedData) {
         Integer imageId;
         CrudRepository repo;
         EntityEnum entityEnum = EntityEnum.getByIndex(entityIndex);
+        byte[] imageData = byteArrayListToPrimitive(imageReceivedData);
         switch (entityEnum) {
             case REGION:
                 repo = regionRepo;
@@ -91,6 +101,6 @@ public class BinaryDataController {
         imageId = imageRepo.save(new Image(imageData)).getImageId();
         entity.setImageId(imageId);
         repo.save(entity);
-        return imageId;
+        return imageId.toString();
     }
 }
