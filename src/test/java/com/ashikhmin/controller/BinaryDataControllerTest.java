@@ -65,7 +65,7 @@ class BinaryDataControllerTest {
                 MockMvcRequestBuilders
                         .get("/image/" + imageId))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_OCTET_STREAM))
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.IMAGE_JPEG))
                 .andReturn().getResponse().getContentAsByteArray();
         Assert.assertArrayEquals(img.getImageBinary(), imageBytesFromApi);
     }
