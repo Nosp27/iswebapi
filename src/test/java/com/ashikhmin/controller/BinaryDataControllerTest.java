@@ -54,6 +54,23 @@ class BinaryDataControllerTest {
 
     @Transactional
     @Test
+    void testGetImage() throws Exception {
+        // create and save sample image
+        Image img = new Image(new byte[]{(byte) 1, (byte) 2, (byte) 3});
+        img = imageRepo.save(img);
+        int imageId = img.getImageId();
+
+        byte[] imageBytesFromApi = mvc.perform(
+                MockMvcRequestBuilders
+                        .get("/image/" + imageId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_OCTET_STREAM))
+                .andReturn().getResponse().getContentAsByteArray();
+        Assert.assertArrayEquals(img.getImageBinary(), imageBytesFromApi);
+    }
+
+    @Transactional
+    @Test
     void testAddImage() throws Exception {
         String imageResource = "static/hse.png";
         String addImageResponse = mvc.perform(
