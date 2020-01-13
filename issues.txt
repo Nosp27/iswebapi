@@ -1,0 +1,7 @@
+# Issues:
+- Favorites:
+	Let user favorite single facilities
+- Users:
+	Implement users and split them into users and managers
+- Markers:
+	Make help window for marker in the map
