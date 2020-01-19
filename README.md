@@ -1,6 +1,6 @@
 # iswebapi
 
-![](https://github.com/Nosp27/iswebapi/workflows/Java%20CI/badge.svg)
+![Web api deployment](https://github.com/Nosp27/iswebapi/workflows/Deploy/badge.svg)
 
 Web api for app designed to support investors
 
