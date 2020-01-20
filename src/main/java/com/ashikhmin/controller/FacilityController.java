@@ -10,7 +10,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
-@CrossOrigin
+@CrossOrigin(
+        origins = "http://localhost:4613",
+        allowCredentials = "true",
+        allowedHeaders = "*",
+        maxAge = 3600
+)
 @RestController
 public class FacilityController {
     @Autowired
@@ -59,11 +64,9 @@ public class FacilityController {
 
     @PostMapping(path = "/facility")
     Facility addFacility(@RequestBody Facility facility) {
-        if (facility == null) {
+        if (facility == null ||  (facility.get_id() == 0 && facility.getName() == null)) {
             return facilityRepo.save(new Facility());
         }
-        if (facilityRepo.existsById(facility.get_id()))
-            throw IswebapiApplication.valueErrorSupplier("Id exists. Trying to repeat primary key").get();
         return facilityRepo.save(facility);
     }
 

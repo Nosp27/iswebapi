@@ -3,13 +3,11 @@ package com.ashikhmin.controller;
 import com.ashikhmin.iswebapi.IswebapiApplication;
 import com.ashikhmin.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -22,10 +20,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.function.Supplier;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = IswebapiApplication.class)
@@ -119,7 +114,11 @@ class BinaryDataControllerTest {
                         .content(Arrays.toString(img.getImageBinary())))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn().getResponse().getContentAsString();
-        Assert.assertTrue(imageRepo.findById(img.getImageId()).isPresent());
+
+        Integer newImageId = region.getImageId();
+
+        Assert.assertNotNull(newImageId);
+        Assert.assertTrue(imageRepo.findById(newImageId).isPresent());
 
         int returnedId = Integer.parseInt(response);
         Assert.assertTrue(imageRepo.findById(returnedId).isPresent());

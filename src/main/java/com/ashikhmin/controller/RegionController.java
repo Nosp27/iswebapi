@@ -6,7 +6,12 @@ import com.ashikhmin.model.RegionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin
+@CrossOrigin(
+        origins = "http://localhost:4613",
+        allowCredentials = "true",
+        allowedHeaders = "*",
+        maxAge = 3600
+)
 @RestController
 public class RegionController {
     @Autowired
@@ -16,6 +21,7 @@ public class RegionController {
     Region getRegion(@PathVariable("id") int id) {
         return regionRepo.findById(id).orElseThrow(IswebapiApplication.valueErrorSupplier("No region with id " + id));
     }
+
     @GetMapping(path = "/regions")
     Iterable<Region> listRegions() {
         return regionRepo.findAll();

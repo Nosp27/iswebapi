@@ -13,9 +13,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.function.Supplier;
 
-@CrossOrigin
+@CrossOrigin(
+        origins = "http://localhost:4613",
+        allowCredentials = "true",
+        allowedHeaders = "*",
+        maxAge = 3600
+)
 @RestController
 public class BinaryDataController {
     @Autowired

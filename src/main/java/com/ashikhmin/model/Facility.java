@@ -1,10 +1,13 @@
 package com.ashikhmin.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Cascade;
+import org.springframework.boot.actuate.autoconfigure.hazelcast.HazelcastHealthContributorAutoConfiguration;
 
 import javax.persistence.Id;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -108,5 +111,15 @@ public class Facility implements HasImage {
 
     public void setLng(double lng) {
         this.lng = lng;
+    }
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "favoriteFacilities")
+    private Set<Actor> subscribedActors;
+
+    public Set<Actor> getSubscribedActors() {
+        if (subscribedActors == null)
+            subscribedActors = new HashSet<>();
+        return subscribedActors;
     }
 }

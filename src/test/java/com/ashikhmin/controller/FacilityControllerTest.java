@@ -129,7 +129,6 @@ class FacilityControllerTest {
                 null,
                 false
         );
-        Assert.assertFalse(facilityRepo.findById(facility.get_id()).isPresent());
         mvc.perform(
                 MockMvcRequestBuilders
                         .post("/facility")

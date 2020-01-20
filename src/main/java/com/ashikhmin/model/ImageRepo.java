@@ -2,6 +2,6 @@ package com.ashikhmin.model;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface ImageRepo extends CrudRepository<Image, Integer> {
-
+public interface ActorRepo extends CrudRepository<Actor, Integer> {
+    Actor findByUsername(String username);
 }
