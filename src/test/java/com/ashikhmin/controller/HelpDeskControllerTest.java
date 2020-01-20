@@ -3,7 +3,6 @@ package com.ashikhmin.controller;
 import com.ashikhmin.iswebapi.IswebapiApplication;
 import com.ashikhmin.model.helpdesk.Issue;
 import com.ashikhmin.model.helpdesk.IssueRepo;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -32,6 +32,8 @@ class HelpDeskControllerTest {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
+
+    @WithMockUser
     @Test
     @Transactional
     void openIssue() throws Exception {
