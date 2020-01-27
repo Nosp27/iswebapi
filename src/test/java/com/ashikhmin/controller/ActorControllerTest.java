@@ -48,41 +48,42 @@ public class ActorControllerTest {
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
-//    @WithMockUser
-//    @Transactional
-//    @Test
-//    void likeFacility() throws Exception {
-//        Actor actor = new Actor();
-//        String mappedActor = mapper.writer().writeValueAsString(actor);
-//
-//        Facility facility = new Facility();
-//        facility.setName("Some facility name");
-//        String mappedFacility = mapper.writer().writeValueAsString(facility);
-//
-//        MockHttpServletResponse result = mvc.perform(
-//                MockMvcRequestBuilders
-//                        .post("/facility")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("{}")
-//        )
-//                .andExpect(MockMvcResultMatchers.status().isOk())
-//                .andReturn().getResponse();
-//
-//        String id = mapper.reader()
-//                .readTree(result.getContentAsString()).findValue("_id").asText();
-//
-//        mvc.perform(
-//                MockMvcRequestBuilders
-//                        .get("/actor/like/"+id)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(mappedFacility)
-//
-//        )
-//                .andExpect(MockMvcResultMatchers.status().isOk());
-//
-//        facility = facilityRepo.findById(Integer.parseInt(id)).get();
-//        actor = actorRepo.findByUsername("user");
-//        Assert.assertTrue(facility.getSubscribedActors().contains(actor));
-//    }
+    @WithMockUser
+    @Transactional
+    @Test
+    void likeFacility() throws Exception {
+        Actor actor = new Actor(Long.toHexString(System.currentTimeMillis()));
+        String mappedActor = mapper.writer().writeValueAsString(actor);
+
+        Facility facility = new Facility();
+        facility.setName("Some facility name");
+        String mappedFacility = mapper.writer().writeValueAsString(facility);
+
+        MockHttpServletResponse result = mvc.perform(
+                MockMvcRequestBuilders
+                        .post("/facility")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}")
+        )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        String id = mapper.reader()
+                .readTree(result.getContentAsString()).findValue("_id").asText();
+
+        mvc.perform(
+                MockMvcRequestBuilders
+                        .get("/actor/like/"+id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mappedFacility)
+
+        )
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        facility = facilityRepo.findById(Integer.parseInt(id)).get();
+        actor = actorRepo.findByUsername("user");
+        Assert.assertTrue(facility.getSubscribedActors().contains(actor));
+    }
 
 }

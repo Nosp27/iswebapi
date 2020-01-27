@@ -16,9 +16,8 @@ public class Actor {
     @Column(unique = true)
     private String username;
 
-    // Only for tests
-    public Actor() {
-        username = Long.toHexString(System.currentTimeMillis());
+    public Actor(String username) {
+        this.username = username;
         favoriteFacilities = new HashSet<>();
     }
 
