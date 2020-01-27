@@ -21,9 +21,6 @@ public class Actor {
         favoriteFacilities = new HashSet<>();
     }
 
-    @ManyToMany(mappedBy = "actors")
-    private Set<Authority> authorities;
-
     @JsonIgnore
     @ManyToMany
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
