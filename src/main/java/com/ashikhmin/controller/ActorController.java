@@ -31,7 +31,9 @@ public class ActorController {
     private Actor getActor() {
         String username = ((UserDetails) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal()).getUsername();
-        return actorRepo.findByUsername(username);
+        if (actorRepo.findByUsername(username) != null)
+            return actorRepo.findByUsername(username);
+        return actorRepo.save(new Actor(username));
     }
 
     @PostMapping("/actor")
