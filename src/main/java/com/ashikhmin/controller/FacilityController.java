@@ -76,7 +76,7 @@ public class FacilityController {
         dbFacility.setDescription(facility.getDescription());
         dbFacility.setLat(facility.getLat());
         dbFacility.setLng(facility.getLng());
-        if (dbFacility.getRegion() != null)
+        if (facility.getRegion() != null)
             dbFacility.setRegion(regionRepo.findById(facility.getRegion().getRegionId()).orElseThrow(exceptionSupplier));
         dbFacility.setCategories(facility.getCategories());
         return facilityRepo.save(dbFacility);
