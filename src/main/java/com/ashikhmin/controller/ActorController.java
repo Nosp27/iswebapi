@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.oidc.StandardClaimAccessor;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -29,9 +31,16 @@ public class ActorController {
     FacilityRepo facilityRepo;
 
     private Actor getActor() {
-        String username = ((UserDetails) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal()).getUsername();
-        return actorRepo.findByUsername(username);
+        Object userPrincipal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username;
+        if (userPrincipal instanceof OidcUser)
+            username = ((StandardClaimAccessor) userPrincipal).getNickName();
+        else
+            username = ((UserDetails) userPrincipal).getUsername();
+
+        if (actorRepo.findByUsername(username) != null)
+            return actorRepo.findByUsername(username);
+        return actorRepo.save(new Actor(username));
     }
 
     @PostMapping("/actor")
