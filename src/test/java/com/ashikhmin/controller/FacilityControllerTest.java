@@ -172,6 +172,8 @@ class FacilityControllerTest {
                     .andExpect(MockMvcResultMatchers.status().is(Matchers.not(200)))
                     .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(facility.getName())));
+        } catch (AssertionError e) {
+            throw e;
         } catch (Throwable e) {
             errorOccurred = true;
         }
