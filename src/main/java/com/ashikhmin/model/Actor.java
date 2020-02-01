@@ -16,6 +16,10 @@ public class Actor {
     @Column(unique = true)
     private String username;
 
+    public Actor() {
+        
+    }
+
     public Actor(String username) {
         this.username = username;
         favoriteFacilities = new HashSet<>();
