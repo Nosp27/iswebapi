@@ -34,8 +34,14 @@ public class Actor {
             inverseJoinColumns = @JoinColumn(name = "facility_id"))
     private Set<Facility> favoriteFacilities;
 
-    public void like(Facility facility) {
-        favoriteFacilities.add(facility);
+    public Boolean like(Facility facility) {
+        if (favoriteFacilities.contains(facility)) {
+            favoriteFacilities.remove(facility);
+            return false;
+        } else {
+            favoriteFacilities.add(facility);
+            return true;
+        }
     }
 
     public Set<Facility> getFavoriteFacilities() {

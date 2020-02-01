@@ -14,6 +14,8 @@ import org.springframework.security.oauth2.core.oidc.StandardClaimAccessor;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @CrossOrigin(
@@ -49,15 +51,17 @@ public class ActorController {
     }
 
     @GetMapping("/actor/like/{id}")
-    public Integer likeFacility(@PathVariable(name = "id") Integer id) {
+    public Map<String, Boolean> likeFacility(@PathVariable(name = "id") Integer id) {
         if (id == null || !facilityRepo.findById(id).isPresent())
             throw IswebapiApplication.valueError("Incorrect id:" + id);
 
         Facility facility = facilityRepo.findById(id).get();
         Actor currentActor = getActor();
-        currentActor.like(facility);
+        Boolean liked = currentActor.like(facility);
         facility.getSubscribedActors().add(currentActor);
-        return 200;
+        Map<String, Boolean> ret = new HashMap<>();
+        ret.put("liked", liked);
+        return ret;
     }
 
     @GetMapping("/actor/favorites")
