@@ -2,7 +2,6 @@ package com.ashikhmin.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Cascade;
-import org.springframework.boot.actuate.autoconfigure.hazelcast.HazelcastHealthContributorAutoConfiguration;
 
 import javax.persistence.Id;
 
@@ -14,7 +13,7 @@ import java.util.Set;
 public class Facility implements HasImage {
     @Id
     @GeneratedValue
-    private int _id;
+    private Integer _id;
     private String name;
     private String description;
 
@@ -24,6 +23,12 @@ public class Facility implements HasImage {
     @Column(columnDefinition = "double precision not null default 0")
     private Double lng;
     private Integer imageId;
+
+    public Facility() {
+        _id = 0;
+        lat = 0.0;
+        lng = 0.0;
+    }
 
     public void setLat(Double lat) {
         this.lat = lat;
@@ -41,7 +46,7 @@ public class Facility implements HasImage {
         this.imageId = imageId;
     }
 
-    public int get_id() {
+    public Integer get_id() {
         return _id;
     }
 
@@ -125,5 +130,17 @@ public class Facility implements HasImage {
         if (subscribedActors == null)
             subscribedActors = new HashSet<>();
         return subscribedActors;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!obj.getClass().equals(getClass()))
+            return false;
+        return get_id().equals(((Facility) obj).get_id());
+    }
+
+    @Override
+    public int hashCode() {
+        return get_id().hashCode();
     }
 }
