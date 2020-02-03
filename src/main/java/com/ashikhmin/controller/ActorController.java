@@ -8,9 +8,11 @@ import com.ashikhmin.model.FacilityRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.oidc.StandardClaimAccessor;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,7 +38,7 @@ public class ActorController {
         Object userPrincipal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username;
         if (userPrincipal instanceof OidcUser)
-            username = ((StandardClaimAccessor) userPrincipal).getNickName();
+            username = ((AuthenticatedPrincipal) userPrincipal).getName();
         else
             username = ((UserDetails) userPrincipal).getUsername();
 
@@ -61,6 +63,7 @@ public class ActorController {
         facility.getSubscribedActors().add(currentActor);
         Map<String, Boolean> ret = new HashMap<>();
         ret.put("liked", liked);
+        actorRepo.save(currentActor);
         return ret;
     }
 
