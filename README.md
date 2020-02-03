@@ -1,6 +1,6 @@
 # iswebapi
 
-![Web api deployment](https://github.com/Nosp27/iswebapi/workflows/Deploy/badge.svg)
+![Web api deployment](https://github.com/Nosp27/iswebapi/workflows/Build/badge.svg)
 
 Web api for app designed to support investors
 
