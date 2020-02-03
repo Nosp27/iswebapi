@@ -1,11 +1,11 @@
-name: Deploy
+name: Build
 on: 
   push:
     branches: 
       - master
 jobs:
   build:
-    name: Build
+    name: Package
     runs-on: ubuntu-latest
     steps:
     - name: package
@@ -19,16 +19,16 @@ jobs:
           cd /home/nosp/git/java/iswebapi
           git fetch && git checkout origin/master
           mvn clean package
-#   deploy:
-#     name: Deploy
-#     needs: build
-#     runs-on: ubuntu-latest
-#     steps:
-#     - name: deploy
-#       uses: appleboy/ssh-action@master
-#       with:
-#         host: ${{ secrets.SSH_HOST }}
-#         username: ${{ secrets.DEPLOY_USERNAME }}
-#         key: ${{ secrets.SSH_PRIVATE_KEY }}
-#         port: ${{ secrets.SSH_PORT }}
-#         script: echo ${{ secrets.LAPTOP_PASS }} | sudo -S systemctl restart iswebapi
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.DEPLOY_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        script: echo root | sudo -S systemctl restart iswebapi
