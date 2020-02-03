@@ -72,18 +72,32 @@ public class ActorControllerTest {
         String id = mapper.reader()
                 .readTree(result.getContentAsString()).findValue("_id").asText();
 
-        mvc.perform(
+        result = mvc.perform(
                 MockMvcRequestBuilders
-                        .get("/actor/like/"+id)
+                        .get("/actor/like/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mappedFacility)
 
         )
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse();
+        Assert.assertTrue(mapper.readTree(result.getContentAsString()).get("liked").asBoolean());
 
         facility = facilityRepo.findById(Integer.parseInt(id)).get();
         actor = actorRepo.findByUsername("user");
         Assert.assertTrue(facility.getSubscribedActors().contains(actor));
+        Assert.assertTrue(actor.getFavoriteFacilities().contains(facility));
+
+        result = mvc.perform(
+                MockMvcRequestBuilders
+                        .get("/actor/like/" + id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mappedFacility)
+
+        )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse();
+        Assert.assertFalse(mapper.readTree(result.getContentAsString()).get("liked").asBoolean());
     }
 
 }
