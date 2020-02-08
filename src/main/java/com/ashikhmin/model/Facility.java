@@ -17,7 +17,11 @@ public class Facility implements HasImage {
     private int _id;
     private String name;
     private String description;
+
+    @Column(columnDefinition = "double precision not null default 0")
     private Double lat;
+
+    @Column(columnDefinition = "double precision not null default 0")
     private Double lng;
     private Integer imageId;
 
@@ -53,7 +57,7 @@ public class Facility implements HasImage {
         this.description = description;
     }
 
-    public void setCoordinates(double lat, double lng){
+    public void setCoordinates(double lat, double lng) {
         this.lat = lat;
         this.lng = lng;
     }
