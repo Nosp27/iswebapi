@@ -64,7 +64,7 @@ public class FacilityController {
 
     @PostMapping(path = "/facility")
     Facility addFacility(@RequestBody Facility facility) {
-        if (facility == null || (facility.get_id() == 0 && facility.getName() == null)) {
+        if (facility == null || (facility.get_id() == null && facility.getName() == null)) {
             return facilityRepo.save(new Facility());
         }
         if (facilityRepo.existsById(facility.get_id()))
