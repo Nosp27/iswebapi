@@ -84,6 +84,10 @@ public class FacilityController {
         if (facility.getRegion() != null)
             dbFacility.setRegion(regionRepo.findById(facility.getRegion().getRegionId()).orElseThrow(exceptionSupplier));
         dbFacility.setCategories(facility.getCategories());
+        dbFacility.setUtility(facility.getUtility());
+        dbFacility.setEmployees(facility.getEmployees());
+        dbFacility.setInvestmentSize(facility.getInvestmentSize());
+        dbFacility.setProfitability(facility.getProfitability());
         return facilityRepo.save(dbFacility);
     }
 

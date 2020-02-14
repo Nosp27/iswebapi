@@ -38,6 +38,11 @@ public class RegionController {
         r.setRegionName(region.getRegionName());
         r.setArea(region.getArea());
         r.setPopulation(region.getPopulation());
+        r.setUnemployed(region.getUnemployed());
+        r.setTotalLabourForce(region.getTotalLabourForce());
+        r.setGdp(region.getGdp());
+        r.setAvgPropertyPrice(region.getAvgPropertyPrice());
+        r.setAvgFamilyIncome(region.getAvgFamilyIncome());
         return regionRepo.save(r);
     }
 
