@@ -10,6 +10,8 @@ public class Region implements HasImage {
     @GeneratedValue
     private int regionId;
     private String regionName;
+    private Double area;
+    private Integer population;
 
     public Integer getImageId() {
         return imageId;
@@ -35,5 +37,21 @@ public class Region implements HasImage {
 
     public void setRegionName(String regionName) {
         this.regionName = regionName;
+    }
+
+    public Double getArea() {
+        return area;
+    }
+
+    public void setArea(Double area) {
+        this.area = area;
+    }
+
+    public Integer getPopulation() {
+        return population;
+    }
+
+    public void setPopulation(Integer population) {
+        this.population = population;
     }
 }
