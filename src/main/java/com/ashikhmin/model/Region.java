@@ -10,9 +10,11 @@ public class Region implements HasImage {
     @GeneratedValue
     private int regionId;
     private String regionName;
+    private Integer imageId;
     private Double area;
     private Integer population;
 
+    // <editor-fold desc = "Accessors">
     public Integer getImageId() {
         return imageId;
     }
@@ -20,8 +22,6 @@ public class Region implements HasImage {
     public void setImageId(Integer imageId) {
         this.imageId = imageId;
     }
-
-    private Integer imageId;
 
     public int getRegionId() {
         return regionId;
@@ -54,4 +54,5 @@ public class Region implements HasImage {
     public void setPopulation(Integer population) {
         this.population = population;
     }
+    // </editor-fold>
 }
