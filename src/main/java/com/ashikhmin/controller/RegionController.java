@@ -36,6 +36,8 @@ public class RegionController {
     Region updateRegion(@RequestBody Region region) {
         Region r = regionRepo.findById(region.getRegionId()).orElseThrow(IswebapiApplication.valueErrorSupplier("No such region"));
         r.setRegionName(region.getRegionName());
+        r.setArea(region.getArea());
+        r.setPopulation(region.getPopulation());
         return regionRepo.save(r);
     }
 
