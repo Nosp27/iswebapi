@@ -34,7 +34,8 @@ public class ActorController {
     @Autowired
     FacilityRepo facilityRepo;
 
-    private Actor getActor() {
+    @GetMapping("/actor/me")
+    public Actor getActor() {
         Object userPrincipal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username;
         if (userPrincipal instanceof OidcUser)
