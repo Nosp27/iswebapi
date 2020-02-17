@@ -45,4 +45,9 @@ public class HelpDeskController {
         }
         return messageRepo.save(message);
     }
+
+    @GetMapping("/help/message/{id}")
+    public Message getMessage(@PathVariable int id) {
+        return messageRepo.findById(id).get();
+    }
 }
