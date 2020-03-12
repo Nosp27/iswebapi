@@ -1,5 +1,6 @@
 package com.ashikhmin.model;
 
+import com.ashikhmin.model.helpdesk.Issue;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Cascade;
 
@@ -37,6 +38,10 @@ public class Actor {
         return username;
     }
 
+    public Set<Issue> getIssues() {
+        return issues;
+    }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -49,6 +54,15 @@ public class Actor {
             joinColumns = @JoinColumn(name = "actor_id"),
             inverseJoinColumns = @JoinColumn(name = "facility_id"))
     private Set<Facility> favoriteFacilities;
+
+    @JsonIgnore
+    @ManyToMany
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @JoinTable(
+            name = "actor_issue",
+            joinColumns = @JoinColumn(name = "actor_id"),
+            inverseJoinColumns = @JoinColumn(name = "issue_id"))
+    private Set<Issue> issues;
 
     public Boolean like(Facility facility) {
         if (favoriteFacilities.contains(facility)) {

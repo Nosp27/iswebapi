@@ -1,9 +1,14 @@
 package com.ashikhmin.model.helpdesk;
 
+import com.ashikhmin.model.Actor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Issue {
@@ -43,6 +48,10 @@ public class Issue {
         if (Status.CLOSED == status)
             status = Status.REOPENED;
     }
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "issues")
+    Set<Actor> participants;
 
     public void closeIssue() {
         status = Status.CLOSED;
