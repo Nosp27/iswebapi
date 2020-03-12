@@ -5,6 +5,7 @@ import com.ashikhmin.model.Actor;
 import com.ashikhmin.model.ActorRepo;
 import com.ashikhmin.model.Facility;
 import com.ashikhmin.model.FacilityRepo;
+import com.ashikhmin.model.helpdesk.Issue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,6 +75,11 @@ public class ActorController {
         return actor.getFavoriteFacilities();
     }
 
+    @GetMapping("/help/issues")
+    public Set<Issue> getIssues() {
+        Actor actor = getActor();
+        return actor.getIssues();
+    }
 
     @GetMapping("/ping")
     public String ping() {
