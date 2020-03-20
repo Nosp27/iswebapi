@@ -18,12 +18,13 @@ public class Actor {
     private String username;
 
     public Actor() {
-        
+
     }
 
     public Actor(String username) {
         this.username = username;
         favoriteFacilities = new HashSet<>();
+        issues = new HashSet<>();
     }
 
     public int getId() {

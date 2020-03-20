@@ -3,25 +3,31 @@ package com.ashikhmin.model.helpdesk;
 import com.ashikhmin.model.Actor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Entity
 public class Issue {
     @Id
+    @GeneratedValue
     private int id;
     private String topic;
     private Status status;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "issue")
-    List<Message> messages;
+    private List<Message> messages;
 
     public static Issue createIssue(){
         return new Issue();
+    }
+
+    private Issue() {
+        messages = new ArrayList<>();
+        participants = new HashSet<>();
     }
 
     public int getId() {
@@ -44,9 +50,25 @@ public class Issue {
         return status;
     }
 
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
+    }
+
+    public List<Message> getMessages() {
+        return messages;
+    }
+
     public void openIssue() {
         if (Status.CLOSED == status)
             status = Status.REOPENED;
+    }
+
+    public Set<Actor> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(Set<Actor> participants) {
+        this.participants = participants;
     }
 
     @JsonIgnore

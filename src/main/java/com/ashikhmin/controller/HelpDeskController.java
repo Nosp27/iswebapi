@@ -2,7 +2,6 @@ package com.ashikhmin.controller;
 
 import com.ashikhmin.iswebapi.IswebapiApplication;
 import com.ashikhmin.model.Actor;
-import com.ashikhmin.model.ActorRepo;
 import com.ashikhmin.model.helpdesk.Issue;
 import com.ashikhmin.model.helpdesk.IssueRepo;
 import com.ashikhmin.model.helpdesk.Message;
@@ -21,6 +20,9 @@ import java.util.List;
 @RestController
 public class HelpDeskController {
     @Autowired
+    ActorController actorController;
+
+    @Autowired
     IssueRepo issueRepo;
 
     @Autowired
@@ -28,6 +30,9 @@ public class HelpDeskController {
 
     @PostMapping("/help/issue")
     public Issue openIssue(@RequestBody Issue issue) {
+        Actor me = actorController.getActor();
+        issue.getParticipants().add(me);
+        me.getIssues().add(issue);
         return issueRepo.save(issue);
     }
 
@@ -42,14 +47,15 @@ public class HelpDeskController {
     @PostMapping("/help/message/send")
     public Message sendMessage(@RequestBody Message message) {
         if (message.getIssue() == null) {
-            Issue newIssue = openIssue(Issue.createIssue());
-            message.setIssue(newIssue);
+            message.setIssue(issueRepo.findById(message.getIssueId())
+                    .orElseThrow(IswebapiApplication.valueErrorSupplier("Message issue not found!")));
         }
+        message.setActor(actorController.getActor());
         return messageRepo.save(message);
     }
 
-    @GetMapping("/help/message/{id}")
-    public Message getMessage(@PathVariable int id) {
-        return messageRepo.findById(id).get();
+    @GetMapping("/help/issue/messages/{id}")
+    public List<Message> getIssueMessages(@PathVariable(name = "id") int id) {
+        return issueRepo.findById(id).get().getMessages();
     }
 }
