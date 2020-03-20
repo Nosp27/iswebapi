@@ -1,6 +1,7 @@
 package com.ashikhmin.model.helpdesk;
 
 import com.ashikhmin.model.Actor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
@@ -11,6 +12,12 @@ public class Message {
     int id;
 
     String content;
+
+    @Transient
+    int actorId;
+
+    @Transient
+    int issueId;
 
     public int getId() {
         return id;
@@ -34,6 +41,7 @@ public class Message {
 
     public void setActor(Actor actor) {
         this.actor = actor;
+        actorId = actor.getId();
     }
 
     public Issue getIssue() {
@@ -42,13 +50,32 @@ public class Message {
 
     public void setIssue(Issue issue) {
         this.issue = issue;
+        issueId = issue.getId();
+    }
+
+    public int getActorId() {
+        return actorId;
+    }
+
+    public void setActorId(int actorId) {
+        this.actorId = actorId;
+    }
+
+    public int getIssueId() {
+        return issueId;
+    }
+
+    public void setIssueId(int issueId) {
+        this.issueId = issueId;
     }
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "actor_id")
     Actor actor;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "issue_id", insertable = false, updatable = false)
     Issue issue;
 }

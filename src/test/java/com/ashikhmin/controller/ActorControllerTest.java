@@ -52,9 +52,6 @@ public class ActorControllerTest {
     @Transactional
     @Test
     void likeFacility() throws Exception {
-        Actor actor = new Actor(Long.toHexString(System.currentTimeMillis()));
-        String mappedActor = mapper.writer().writeValueAsString(actor);
-
         Facility facility = new Facility();
         facility.setName("Some facility name");
         String mappedFacility = mapper.writer().writeValueAsString(facility);
@@ -84,9 +81,9 @@ public class ActorControllerTest {
         Assert.assertTrue(mapper.readTree(result.getContentAsString()).get("liked").asBoolean());
 
         facility = facilityRepo.findById(Integer.parseInt(id)).get();
-        actor = actorRepo.findByUsername("user");
-        Assert.assertTrue(facility.getSubscribedActors().contains(actor));
-        Assert.assertTrue(actor.getFavoriteFacilities().contains(facility));
+        Actor me = actorRepo.findByUsername("user");
+        Assert.assertTrue(facility.getSubscribedActors().contains(me));
+        Assert.assertTrue(me.getFavoriteFacilities().contains(facility));
 
         result = mvc.perform(
                 MockMvcRequestBuilders
