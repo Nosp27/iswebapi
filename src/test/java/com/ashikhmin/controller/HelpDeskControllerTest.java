@@ -48,6 +48,7 @@ class HelpDeskControllerTest {
     void openIssue() throws Exception {
         Issue issue = Issue.createIssue();
         issue.setTopic("Test issue");
+        long inintialCount = issueRepo.count();
         mvc.perform(
                 MockMvcRequestBuilders
                         .post("/help/issue")
@@ -56,7 +57,7 @@ class HelpDeskControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(issue.getTopic())));
-        Assert.assertTrue(issueRepo.findById(issue.getId()).isPresent());
+        Assert.assertEquals(1, issueRepo.count() - inintialCount);
     }
 
     @Test
@@ -73,7 +74,8 @@ class HelpDeskControllerTest {
     void createAndGetIssues() throws Exception {
         int issueCount = 3;
 
-        mvc.perform(MockMvcRequestBuilders.get("/actor/me")); // request for user initialization
+        // request for user initialization
+        mvc.perform(MockMvcRequestBuilders.get("/actor/me"));
         Actor actor = actorRepo.findByUsername("user"); // find actor
 
         List<Issue> issues = new ArrayList<>();

@@ -3,9 +3,13 @@ package com.ashikhmin.model;
 import com.ashikhmin.model.helpdesk.Issue;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Cascade;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Entity
@@ -17,14 +21,34 @@ public class Actor {
     @Column(unique = true)
     private String username;
 
+    private String givenName;
+    private String familyName;
+    private String email;
+    private String privilege;
+    private String imageSrc;
+
     public Actor() {
 
     }
 
-    public Actor(String username) {
-        this.username = username;
-        favoriteFacilities = new HashSet<>();
-        issues = new HashSet<>();
+    public Actor(OidcUser user) {
+        OidcUserInfo userInfo = user.getUserInfo();
+        username = userInfo.getSubject();
+        givenName = userInfo.getGivenName();
+        familyName = userInfo.getFamilyName();
+        email = userInfo.getEmail();
+        privilege = userInfo.getClaimAsString("privilege");
+    }
+
+    public static Actor testAcor(String testUsername) {
+        Actor ret = new Actor();
+        ret.username = testUsername;
+        ret.givenName = "Test";
+        ret.familyName = "User";
+        ret.email = "somefakeuseruser@somemail.some";
+        ret.favoriteFacilities = new HashSet<>();
+        ret.issues = new HashSet<>();
+        return ret;
     }
 
     public int getId() {
@@ -45,6 +69,46 @@ public class Actor {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getGivenName() {
+        return givenName;
+    }
+
+    public void setGivenName(String givenName) {
+        this.givenName = givenName;
+    }
+
+    public String getFamilyName() {
+        return familyName;
+    }
+
+    public void setFamilyName(String familyName) {
+        this.familyName = familyName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPrivilege() {
+        return privilege;
+    }
+
+    public void setPrivilege(String privilege) {
+        this.privilege = privilege;
+    }
+
+    public String getImageSrc() {
+        return imageSrc;
+    }
+
+    public void setImageSrc(String imageSrc) {
+        this.imageSrc = imageSrc;
     }
 
     @JsonIgnore

@@ -69,13 +69,13 @@ public class Message {
         this.issueId = issueId;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JsonIgnore
     @JoinColumn(name = "actor_id")
     Actor actor;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JsonIgnore
-    @JoinColumn(name = "issue_id", insertable = false, updatable = false)
+    @JoinColumn(name = "issue_id")
     Issue issue;
 }

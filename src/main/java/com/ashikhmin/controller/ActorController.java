@@ -17,7 +17,9 @@ import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,20 +40,42 @@ public class ActorController {
     @GetMapping("/actor/me")
     public Actor getActor() {
         Object userPrincipal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        boolean isProduction = userPrincipal instanceof OidcUser;
         String username;
-        if (userPrincipal instanceof OidcUser)
-            username = ((AuthenticatedPrincipal) userPrincipal).getName();
+        if (isProduction)
+            username = ((OidcUser) userPrincipal).getName();
         else
             username = ((UserDetails) userPrincipal).getUsername();
 
-        if (actorRepo.findByUsername(username) != null)
-            return actorRepo.findByUsername(username);
-        return actorRepo.save(new Actor(username));
+        Actor newActor;
+        if (isProduction)
+            newActor = new Actor((OidcUser) userPrincipal);
+        else
+            newActor = Actor.testAcor(username);
+
+        if (actorRepo.findByUsername(username) == null)
+            newActor = actorRepo.save(newActor);
+        else
+            newActor = editActor(newActor, username);
+        return newActor;
     }
 
     @PostMapping("/actor")
     public Actor addActor(@RequestBody Actor actor) {
         return actorRepo.save(actor);
+    }
+
+    @PutMapping("/actor/{actorId}")
+    public Actor editActor(@RequestBody Actor actor, @PathVariable(name = "actorId") String actorId) {
+        Actor old = actorRepo.findByUsername(actorId);
+        if (old == null)
+            throw IswebapiApplication.valueError("Actor is not present in database");
+        old.setEmail(actor.getEmail());
+        old.setFamilyName(actor.getFamilyName());
+        old.setGivenName(actor.getGivenName());
+        old.setImageSrc(actor.getImageSrc());
+        old.setPrivilege(actor.getPrivilege());
+        return actorRepo.save(old);
     }
 
     @GetMapping("/actor/like/{id}")
