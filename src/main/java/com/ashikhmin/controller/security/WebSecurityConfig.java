@@ -16,8 +16,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/ping", "/actor/login_fail").permitAll()
-                .anyRequest().authenticated()
+                .antMatchers("/secure_ping", "/help/**", "/actor/**").authenticated()
+                .anyRequest().permitAll()
                 .and().oauth2Login();
     }
 }

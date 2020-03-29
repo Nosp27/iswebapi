@@ -18,7 +18,7 @@ public class Issue {
     private Status status;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "issue")
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL)
     private List<Message> messages;
 
     public static Issue createIssue(){
@@ -72,7 +72,7 @@ public class Issue {
     }
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "issues")
+    @ManyToMany(mappedBy = "issues", cascade = CascadeType.ALL)
     Set<Actor> participants;
 
     public void closeIssue() {
