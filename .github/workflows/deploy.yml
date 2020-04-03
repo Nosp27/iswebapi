@@ -17,6 +17,8 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           cd /home/nosp/git/iswebapi
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/github_fozzy_key
           git fetch && git checkout origin/master
           mvn clean package
   deploy:
