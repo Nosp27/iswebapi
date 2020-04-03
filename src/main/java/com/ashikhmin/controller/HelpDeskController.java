@@ -2,13 +2,11 @@ package com.ashikhmin.controller;
 
 import com.ashikhmin.iswebapi.IswebapiApplication;
 import com.ashikhmin.model.Actor;
-import com.ashikhmin.model.helpdesk.Issue;
-import com.ashikhmin.model.helpdesk.IssueRepo;
-import com.ashikhmin.model.helpdesk.Message;
-import com.ashikhmin.model.helpdesk.MessageRepo;
+import com.ashikhmin.model.helpdesk.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @CrossOrigin(
@@ -45,17 +43,24 @@ public class HelpDeskController {
     }
 
     @PostMapping("/help/message/send")
-    public Message sendMessage(@RequestBody Message message) {
-        if (message.getIssue() == null) {
-            message.setIssue(issueRepo.findById(message.getIssueId())
-                    .orElseThrow(IswebapiApplication.valueErrorSupplier("Message issue not found!")));
-        }
-        message.setActor(actorController.getActor());
-        return messageRepo.save(message);
+    public MessageDTO sendMessage(@RequestBody MessageDTO dto) {
+        Message newMsg = new Message(
+                dto.getContent(),
+                issueRepo.findById(dto.getIssueId())
+                        .orElseThrow(IswebapiApplication.valueErrorSupplier(
+                                "Invalid issue id provided"
+                        )),
+                actorController.getActor()
+        );
+        return new MessageDTO(messageRepo.save(newMsg));
     }
 
     @GetMapping("/help/issue/messages/{id}")
-    public List<Message> getIssueMessages(@PathVariable(name = "id") int id) {
-        return issueRepo.findById(id).get().getMessages();
+    public List<MessageDTO> getIssueMessages(@PathVariable(name = "id") int id) {
+        List<MessageDTO> messageDTOs = new LinkedList<>();
+        List<Message> messagesFromDb = issueRepo.findById(id).get().getMessages();
+        for (Message m : messagesFromDb)
+            messageDTOs.add(new MessageDTO(m));
+        return messageDTOs;
     }
 }
