@@ -13,11 +13,15 @@ public class Message {
 
     String content;
 
-    @Transient
-    int actorId;
+    public Message() {
 
-    @Transient
-    int issueId;
+    }
+
+    public Message(String content, Issue issue, Actor sender) {
+        this.content = content;
+        this.issue = issue;
+        this.actor = sender;
+    }
 
     public int getId() {
         return id;
@@ -41,7 +45,6 @@ public class Message {
 
     public void setActor(Actor actor) {
         this.actor = actor;
-        actorId = actor.getId();
     }
 
     public Issue getIssue() {
@@ -50,23 +53,6 @@ public class Message {
 
     public void setIssue(Issue issue) {
         this.issue = issue;
-        issueId = issue.getId();
-    }
-
-    public int getActorId() {
-        return actorId;
-    }
-
-    public void setActorId(int actorId) {
-        this.actorId = actorId;
-    }
-
-    public int getIssueId() {
-        return issueId;
-    }
-
-    public void setIssueId(int issueId) {
-        this.issueId = issueId;
     }
 
     @ManyToOne(cascade = CascadeType.ALL)
