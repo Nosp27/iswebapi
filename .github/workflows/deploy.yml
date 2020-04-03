@@ -16,7 +16,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          cd /home/nosp/git/java/iswebapi
+          cd /home/nosp/git/iswebapi
           git fetch && git checkout origin/master
           mvn clean package
   deploy:
