@@ -27,8 +27,8 @@ jobs:
     - name: deploy
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.SSH_HOST }}
+        host: nosp.top
         username: ${{ secrets.DEPLOY_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.SSH_PORT }}
-        script: echo root | sudo -S systemctl restart iswebapi
+        port: 22
+        script: echo nosp | sudo -S systemctl restart iswebapi
