@@ -6,6 +6,9 @@ import com.ashikhmin.model.helpdesk.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,6 +34,7 @@ public class HelpDeskController {
         Actor me = actorController.getActor();
         issue.getParticipants().add(me);
         me.getIssues().add(issue);
+        issue.openIssue();
         return issueRepo.save(issue);
     }
 
@@ -50,9 +54,10 @@ public class HelpDeskController {
                         .orElseThrow(IswebapiApplication.valueErrorSupplier(
                                 "Invalid issue id provided"
                         )),
-                actorController.getActor()
+                actorController.getActor(),
+                dto.getSendTime()
         );
-        return new MessageDTO(messageRepo.save(newMsg));
+        return new MessageDTO(messageRepo.save(newMsg), actorController.getActor());
     }
 
     @GetMapping("/help/issue/messages/{id}")
@@ -60,7 +65,22 @@ public class HelpDeskController {
         List<MessageDTO> messageDTOs = new LinkedList<>();
         List<Message> messagesFromDb = issueRepo.findById(id).get().getMessages();
         for (Message m : messagesFromDb)
-            messageDTOs.add(new MessageDTO(m));
+            messageDTOs.add(new MessageDTO(m, actorController.getActor()));
+        return messageDTOs;
+    }
+
+    @GetMapping("/help/issue/new_messages/{id}/{last_check_timestamp}")
+    public List<MessageDTO> getNewIssueMessages(
+            @PathVariable(name = "id") int id,
+            @PathVariable(name = "last_check_timestamp") long last_check_timestamp) {
+        Timestamp last_check_time = new Timestamp(last_check_timestamp);
+        List<MessageDTO> messageDTOs = new LinkedList<>();
+        List<Message> messagesFromDb = messageRepo.
+                findAllByIssue_IdAndSendTimeAfterOrderBySendTimeAsc(
+                        id, last_check_time
+                );
+        for (Message m : messagesFromDb)
+            messageDTOs.add(new MessageDTO(m, actorController.getActor()));
         return messageDTOs;
     }
 }
