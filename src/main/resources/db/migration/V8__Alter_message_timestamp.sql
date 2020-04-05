@@ -1,0 +1,2 @@
+ALTER TABLE message DROP COLUMN timestamp;
+ALTER TABLE message ADD COLUMN sent_at TIMESTAMP;

@@ -4,6 +4,7 @@ import com.ashikhmin.model.Actor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
 public class Message {
@@ -12,15 +13,17 @@ public class Message {
     int id;
 
     String content;
+    Timestamp sendTime;
 
     public Message() {
 
     }
 
-    public Message(String content, Issue issue, Actor sender) {
+    public Message(String content, Issue issue, Actor sender, long sendTime) {
         this.content = content;
         this.issue = issue;
         this.actor = sender;
+        this.sendTime = new Timestamp(sendTime);
     }
 
     public int getId() {
@@ -53,6 +56,14 @@ public class Message {
 
     public void setIssue(Issue issue) {
         this.issue = issue;
+    }
+
+    public Timestamp getSendTime() {
+        return sendTime;
+    }
+
+    public void setSendTime(Timestamp sendTime) {
+        this.sendTime = sendTime;
     }
 
     @ManyToOne(cascade = CascadeType.ALL)

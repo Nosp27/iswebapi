@@ -1,20 +1,24 @@
 package com.ashikhmin.model.helpdesk;
 
+import com.ashikhmin.model.Actor;
+
 public class MessageDTO {
     private int id;
     private String content;
     private int issueId;
-    private int actorId;
+    private boolean mine;
+    private long sendTime;
 
     public MessageDTO() {
 
     }
 
-    public MessageDTO(Message message) {
+    public MessageDTO(Message message, Actor requester) {
         id = message.id;
         content = message.content;
         issueId = message.getIssue().getId();
-        actorId = message.getActor().getId();
+        mine = message.getActor().getId() == requester.getId();
+        sendTime = message.getSendTime().getTime();
     }
 
     public int getId() {
@@ -41,11 +45,19 @@ public class MessageDTO {
         this.issueId = issueId;
     }
 
-    public int getActorId() {
-        return actorId;
+    public long getSendTime() {
+        return sendTime;
     }
 
-    public void setActorId(int actorId) {
-        this.actorId = actorId;
+    public void setSendTime(long sendTime) {
+        this.sendTime = sendTime;
+    }
+
+    public boolean isMine() {
+        return mine;
+    }
+
+    public void setMine(boolean mine) {
+        this.mine = mine;
     }
 }
