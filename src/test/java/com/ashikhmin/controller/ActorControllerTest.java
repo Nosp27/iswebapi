@@ -5,7 +5,9 @@ import com.ashikhmin.model.Actor;
 import com.ashikhmin.model.ActorRepo;
 import com.ashikhmin.model.Facility;
 import com.ashikhmin.model.FacilityRepo;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,53 +50,102 @@ public class ActorControllerTest {
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
-    @WithMockUser
-    @Transactional
-    @Test
-    void likeFacility() throws Exception {
+    MockHttpServletResponse postNewFacility() throws Exception {
         Facility facility = new Facility();
         facility.setName("Some facility name");
         String mappedFacility = mapper.writer().writeValueAsString(facility);
 
-        MockHttpServletResponse result = mvc.perform(
+        return mvc.perform(
                 MockMvcRequestBuilders
                         .post("/facility")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}")
-        )
+                        .content(mappedFacility))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
-
-        String id = mapper.reader()
-                .readTree(result.getContentAsString()).findValue("_id").asText();
-
-        result = mvc.perform(
-                MockMvcRequestBuilders
-                        .get("/actor/like/" + id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mappedFacility)
-
-        )
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn().getResponse();
-        Assert.assertTrue(mapper.readTree(result.getContentAsString()).get("liked").asBoolean());
-
-        facility = facilityRepo.findById(Integer.parseInt(id)).get();
-        Actor me = actorRepo.findByUsername("user");
-        Assert.assertTrue(facility.getSubscribedActors().contains(me));
-        Assert.assertTrue(me.getFavoriteFacilities().contains(facility));
-
-        result = mvc.perform(
-                MockMvcRequestBuilders
-                        .get("/actor/like/" + id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mappedFacility)
-
-        )
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn().getResponse();
-        Assert.assertFalse(mapper.readTree(result.getContentAsString()).get("liked").asBoolean());
     }
 
+    @WithMockUser
+    @Transactional
+    @Test
+    void getActor() throws Exception {
+        mvc.perform(
+                MockMvcRequestBuilders.get("/actor/me"))
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("user")));
+    }
+
+    @WithMockUser
+    @Transactional
+    @Test
+    void likeFacility() throws Exception {
+        MockHttpServletResponse newFacility = postNewFacility();
+
+        // Like new facility
+        String id = mapper.reader()
+                .readTree(newFacility.getContentAsString()).findValue("_id").asText();
+        mvc.perform(
+                MockMvcRequestBuilders
+                        .get("/actor/like/" + id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers
+                        .content()
+                        .string(Matchers.containsString("\"liked\":true")));
+
+        // Unlike new facility (like again)
+        mvc.perform(
+                MockMvcRequestBuilders
+                        .get("/actor/like/" + id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers
+                        .content()
+                        .string(Matchers.containsString("\"liked\":false")));
+    }
+
+    @WithMockUser
+    @Transactional
+    @Test
+    void favoriteFacilities() throws Exception {
+        MockHttpServletResponse newFacility = postNewFacility();
+
+        String _id = mapper.reader()
+                .readTree(newFacility.getContentAsString()).findValue("_id").asText();
+        String name = mapper.reader()
+                .readTree(newFacility.getContentAsString()).findValue("name").asText();
+
+        // Test no favorites
+        mvc.perform(
+                MockMvcRequestBuilders.get("/actor/favorites")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers
+                        .content()
+                        .string(Matchers.not(Matchers.containsString("\"_id\":" + _id))))
+                .andExpect(MockMvcResultMatchers
+                        .content()
+                        .string(Matchers.not(Matchers.containsString(name))));
+
+        // Like new facility
+        String id = mapper.reader()
+                .readTree(newFacility.getContentAsString()).findValue("_id").asText();
+        mvc.perform(
+                MockMvcRequestBuilders
+                        .get("/actor/like/" + id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers
+                        .content()
+                        .string(Matchers.containsString("\"liked\":true")));
+
+        // Test there are favorites
+        mvc.perform(
+                MockMvcRequestBuilders.get("/actor/favorites")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content()
+                        .string(Matchers.containsString("\"_id\":" + _id)))
+                .andExpect(MockMvcResultMatchers.content()
+                        .string(Matchers.containsString(name)));
+    }
 }
