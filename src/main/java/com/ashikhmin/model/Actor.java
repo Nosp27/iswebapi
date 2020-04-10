@@ -26,6 +26,7 @@ public class Actor {
     private String email;
     private String privilege;
     private String imageSrc;
+    private String firebaseToken;
 
     public Actor() {
 
@@ -109,6 +110,14 @@ public class Actor {
 
     public void setImageSrc(String imageSrc) {
         this.imageSrc = imageSrc;
+    }
+
+    public String getFirebaseToken() {
+        return firebaseToken;
+    }
+
+    public void setFirebaseToken(String firebaseToken) {
+        this.firebaseToken = firebaseToken;
     }
 
     @JsonIgnore
