@@ -5,7 +5,6 @@ import com.ashikhmin.iswebapi.IswebapiApplication;
 import com.ashikhmin.model.*;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Notification;
-import com.oracle.tools.packager.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +12,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @CrossOrigin(
         origins = "http://localhost:4613",
@@ -22,6 +24,9 @@ import java.util.function.Supplier;
 )
 @RestController
 public class FacilityController {
+
+    Logger logger = Logger.getLogger(FacilityController.class.getName());
+
     @Autowired
     FacilityRepo facilityRepo;
 
@@ -125,7 +130,7 @@ public class FacilityController {
         try {
             firebaseComponent.sendNotificationToTokens(notification, tokens);
         } catch (FirebaseMessagingException e) {
-            Log.debug(e);
+            logger.log(Level.WARNING, "Error while sending firebase message", e);
             throw new RuntimeException(e);
         }
     }

@@ -1,19 +1,22 @@
 package com.ashikhmin.firebase;
 
-import com.google.auth.oauth2.AccessToken;
+import com.ashikhmin.controller.ActorController;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.*;
-import com.oracle.tools.packager.Log;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Collection;
+
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 @Component
 public class FirebaseComponent {
-    private String serverToken = null;
+    Logger logger = Logger.getLogger(ActorController.class.getName());
 
     public FirebaseComponent() {
         try {
@@ -24,7 +27,7 @@ public class FirebaseComponent {
     }
 
     private void initializeApp() throws IOException {
-        if(!FirebaseApp.getApps().isEmpty())
+        if (!FirebaseApp.getApps().isEmpty())
             return;
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(
@@ -46,7 +49,7 @@ public class FirebaseComponent {
                 .addAllTokens(tokens)
                 .build();
         BatchResponse response = FirebaseMessaging.getInstance().sendMulticast(message);
-        Log.info(String.format(
+        logger.log(Level.INFO, String.format(
                 "Sent %s firebase messages. Successful: %s, Unsuccessful: %s.",
                 response.getResponses().size(),
                 response.getSuccessCount(),

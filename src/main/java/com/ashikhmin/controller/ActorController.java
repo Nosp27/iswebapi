@@ -6,23 +6,19 @@ import com.ashikhmin.model.ActorRepo;
 import com.ashikhmin.model.Facility;
 import com.ashikhmin.model.FacilityRepo;
 import com.ashikhmin.model.helpdesk.Issue;
-import com.oracle.tools.packager.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.oidc.StandardClaimAccessor;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @CrossOrigin(
         origins = "http://localhost:4613",
@@ -32,6 +28,9 @@ import java.util.Set;
 )
 @RestController
 public class ActorController {
+
+    Logger logger = Logger.getLogger(ActorController.class.getName());
+
     @Autowired
     ActorRepo actorRepo;
 
@@ -77,7 +76,7 @@ public class ActorController {
         finalMessage = String.format(finalMessage, currentActor.getEmail());
         currentActor.setFirebaseToken(token);
         actorRepo.save(currentActor);
-        Log.debug(finalMessage);
+        logger.log(Level.INFO, finalMessage);
         return finalMessage;
     }
 
