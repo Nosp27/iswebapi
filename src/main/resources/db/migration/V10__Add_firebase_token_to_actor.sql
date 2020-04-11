@@ -1,2 +1,1 @@
-ALTER TABLE message DROP COLUMN sent_at;
-ALTER TABLE message ADD COLUMN send_time TIMESTAMP;
+ALTER TABLE actor ADD COLUMN firebase_token text;

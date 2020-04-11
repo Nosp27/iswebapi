@@ -6,6 +6,7 @@ import com.ashikhmin.model.ActorRepo;
 import com.ashikhmin.model.Facility;
 import com.ashikhmin.model.FacilityRepo;
 import com.ashikhmin.model.helpdesk.Issue;
+import com.oracle.tools.packager.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +64,21 @@ public class ActorController {
     @PostMapping("/actor")
     public Actor addActor(@RequestBody Actor actor) {
         return actorRepo.save(actor);
+    }
+
+    @PostMapping("/actor/new_token")
+    public String newToken(@RequestBody String token) {
+        Actor currentActor = getActor();
+        if(token == null)
+            throw IswebapiApplication.valueError("Null firebase token supplied!");
+        if(currentActor.getFirebaseToken() != null && token.equals(currentActor.getFirebaseToken()))
+            return "Token is fine already";
+        String finalMessage = currentActor.getFirebaseToken() == null ? "Successfully assigned a new token to %s" : "Successfully replaced token for %s";
+        finalMessage = String.format(finalMessage, currentActor.getEmail());
+        currentActor.setFirebaseToken(token);
+        actorRepo.save(currentActor);
+        Log.debug(finalMessage);
+        return finalMessage;
     }
 
     @PutMapping("/actor/{actorId}")

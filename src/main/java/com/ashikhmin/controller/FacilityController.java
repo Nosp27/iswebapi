@@ -1,7 +1,11 @@
 package com.ashikhmin.controller;
 
+import com.ashikhmin.firebase.FirebaseComponent;
 import com.ashikhmin.iswebapi.IswebapiApplication;
 import com.ashikhmin.model.*;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Notification;
+import com.oracle.tools.packager.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,10 +26,16 @@ public class FacilityController {
     FacilityRepo facilityRepo;
 
     @Autowired
+    FirebaseComponent firebaseComponent;
+
+    @Autowired
     private CategoryRepo categoryRepo;
 
     @Autowired
     private RegionRepo regionRepo;
+
+    @Autowired
+    private ActorRepo actorRepo;
 
     @GetMapping(path = "/facilities")
     Iterable<Facility> getAllFacilities() {
@@ -88,7 +98,36 @@ public class FacilityController {
         dbFacility.setEmployees(facility.getEmployees());
         dbFacility.setInvestmentSize(facility.getInvestmentSize());
         dbFacility.setProfitability(facility.getProfitability());
-        return facilityRepo.save(dbFacility);
+
+        dbFacility = facilityRepo.save(dbFacility);
+        notifyFacility(dbFacility.get_id());
+        return dbFacility;
+    }
+
+    @PostMapping(path = "/facility/notify/{id}")
+    String notifyFacility(@PathVariable int id) {
+        Facility dbFacility = facilityRepo.findById(id)
+                .orElseThrow(IswebapiApplication.valueErrorSupplier("No facility with given id"));
+        sendFacilityUpdateNotification(dbFacility);
+        return "Notification gone";
+    }
+
+    private void sendFacilityUpdateNotification(Facility facility) {
+        Notification notification = Notification.builder()
+                .setTitle(facility.getName() + "!")
+                .setBody("Go check!")
+                .build();
+
+        Set<String> tokens = new HashSet<>();
+        for (Actor actor : actorRepo.findByFavoriteFacilitiesContaining(facility))
+            if (actor.getFirebaseToken() != null)
+                tokens.add(actor.getFirebaseToken());
+        try {
+            firebaseComponent.sendNotificationToTokens(notification, tokens);
+        } catch (FirebaseMessagingException e) {
+            Log.debug(e);
+            throw new RuntimeException(e);
+        }
     }
 
     @DeleteMapping(path = "/facility/{facilityId}")
