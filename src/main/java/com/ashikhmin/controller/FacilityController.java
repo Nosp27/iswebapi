@@ -131,7 +131,6 @@ public class FacilityController {
             firebaseComponent.sendNotificationToTokens(notification, tokens);
         } catch (FirebaseMessagingException e) {
             logger.log(Level.WARNING, "Error while sending firebase message", e);
-            throw new RuntimeException(e);
         }
     }
 

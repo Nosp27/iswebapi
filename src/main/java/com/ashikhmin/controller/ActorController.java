@@ -70,6 +70,11 @@ public class ActorController {
         Actor currentActor = getActor();
         if(token == null)
             throw IswebapiApplication.valueError("Null firebase token supplied!");
+        if(token.equals("null")) {
+            currentActor.setFirebaseToken(null);
+            actorRepo.save(currentActor);
+            return "Actor Token reset is successful";
+        }
         if(currentActor.getFirebaseToken() != null && token.equals(currentActor.getFirebaseToken()))
             return "Token is fine already";
         String finalMessage = currentActor.getFirebaseToken() == null ? "Successfully assigned a new token to %s" : "Successfully replaced token for %s";
