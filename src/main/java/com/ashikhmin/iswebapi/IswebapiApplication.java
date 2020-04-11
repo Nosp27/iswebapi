@@ -1,6 +1,7 @@
 package com.ashikhmin.iswebapi;
 
 import com.ashikhmin.controller.FacilityController;
+import com.ashikhmin.firebase.FirebaseComponent;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -12,7 +13,7 @@ import java.util.function.Supplier;
 @EntityScan(basePackages = "com.ashikhmin.model")
 @EnableJpaRepositories("com.ashikhmin.model")
 @SpringBootApplication
-@ComponentScan(basePackageClasses = FacilityController.class)
+@ComponentScan(basePackageClasses = {FacilityController.class, FirebaseComponent.class})
 public class IswebapiApplication {
     public static void main(String[] args) {
         SpringApplication.run(IswebapiApplication.class, args);

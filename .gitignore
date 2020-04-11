@@ -4,6 +4,9 @@ target/
 !**/src/main/**
 !**/src/test/**
 
+### Server key Firebase ###
+server_key.json
+
 ### STS ###
 .apt_generated
 .classpath
