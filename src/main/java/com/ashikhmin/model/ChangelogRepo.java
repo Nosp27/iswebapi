@@ -7,5 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 public interface ChangelogRepo extends CrudRepository<Changelog, Integer> {
+    Iterable<Changelog> findAllByFacilityId(Integer facilityId);
     Iterable<Changelog> findAllByUpdatedAtAfter(Timestamp timestamp);
 }

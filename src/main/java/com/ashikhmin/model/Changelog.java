@@ -1,8 +1,6 @@
 package com.ashikhmin.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
@@ -11,14 +9,15 @@ public class Changelog {
     @GeneratedValue
     int _id;
 
-    int id;
     String type;
+    int facilityId;
     Timestamp updatedAt;
 
-    public Changelog(){}
+    public Changelog() {
+    }
 
     public Changelog(int facilityId, Timestamp timestamp) {
-        id = facilityId;
+        this.facilityId = facilityId;
         updatedAt = timestamp;
         type = "Facility";
     }
@@ -31,12 +30,12 @@ public class Changelog {
         this._id = _id;
     }
 
-    public int getId() {
-        return id;
+    public int getFacilityId() {
+        return facilityId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setFacilityId(int facilityId) {
+        this.facilityId = facilityId;
     }
 
     public String getType() {

@@ -144,6 +144,9 @@ public class FacilityController {
         Facility facility =
                 facilityRepo.findById(facilityId)
                         .orElseThrow(IswebapiApplication.valueErrorSupplier("No facility with id " + facilityId));
+        Iterable<Changelog> linkedChangelog = changelogRepo.findAllByFacilityId(facility.get_id());
+        if(linkedChangelog != null)
+            changelogRepo.deleteAll(linkedChangelog);
         facilityRepo.delete(facility);
         return facility;
     }

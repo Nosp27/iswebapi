@@ -51,6 +51,16 @@ public class Facility implements HasImage {
     @ManyToMany(mappedBy = "favoriteFacilities")
     private Set<Actor> subscribedActors;
 
+    @JsonIgnore
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "changelog",
+            joinColumns = @JoinColumn(name = "_id"),
+            inverseJoinColumns = @JoinColumn(name = "facilityId")
+    )
+    private List<Changelog> changelog;
+
     public Set<Actor> getSubscribedActors() {
         if (subscribedActors == null)
             subscribedActors = new HashSet<>();
@@ -186,5 +196,14 @@ public class Facility implements HasImage {
     public void setProfitability(Double profitability) {
         this.profitability = profitability;
     }
+
+    public List<Changelog> getChangelog() {
+        return changelog;
+    }
+
+    public void setChangelog(List<Changelog> changelog) {
+        this.changelog = changelog;
+    }
+
     //</editor-fold>
 }

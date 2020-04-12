@@ -11,7 +11,7 @@ FacilityRepo extends CrudRepository<Facility, Integer> {
     @Query(value =
             "select * " +
             "from facility f " +
-            "join changelog on changelog.id=f._id " +
+            "join changelog on changelog.facility_id=f._id " +
             "where changelog.updated_at > (now() - interval '1 day')" +
             "and f._id in (?1)",
             nativeQuery = true)
