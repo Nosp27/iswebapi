@@ -14,9 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -111,6 +109,15 @@ public class ActorController {
         ret.put("liked", liked);
         actorRepo.save(currentActor);
         return ret;
+    }
+
+    @GetMapping(path = "actor/update_feed")
+    Iterable<Facility> getUpdateFeed() {
+        Iterable<Facility> actorFavorites = facilityRepo.getAllBySubscribedActorsContaining(getActor());
+        List<Integer> actorFavoritesIds = new ArrayList<>();
+        actorFavorites.forEach(e -> actorFavoritesIds.add(e.get_id()));
+        Iterable<Facility> facilitiesChangelog = facilityRepo.getChangelog(actorFavoritesIds);
+        return facilitiesChangelog;
     }
 
     @GetMapping("/actor/favorites")

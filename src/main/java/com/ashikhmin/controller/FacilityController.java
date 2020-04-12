@@ -8,8 +8,10 @@ import com.google.firebase.messaging.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -24,7 +26,6 @@ import java.util.logging.Logger;
 )
 @RestController
 public class FacilityController {
-
     Logger logger = Logger.getLogger(FacilityController.class.getName());
 
     @Autowired
@@ -41,6 +42,9 @@ public class FacilityController {
 
     @Autowired
     private ActorRepo actorRepo;
+
+    @Autowired
+    private ChangelogRepo changelogRepo;
 
     @GetMapping(path = "/facilities")
     Iterable<Facility> getAllFacilities() {
@@ -105,6 +109,7 @@ public class FacilityController {
         dbFacility.setProfitability(facility.getProfitability());
 
         dbFacility = facilityRepo.save(dbFacility);
+        changelogRepo.save(new Changelog(dbFacility.get_id(), new Timestamp(System.currentTimeMillis())));
         notifyFacility(dbFacility.get_id());
         return dbFacility;
     }
