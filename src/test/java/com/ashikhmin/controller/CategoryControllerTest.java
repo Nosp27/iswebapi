@@ -31,6 +31,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureMockMvc
 class CategoryControllerTest {
     @Autowired
+    SecurityController securityController;
+
+    @Autowired
     PlatformTransactionManager transactionManager;
 
     @Autowired
@@ -53,6 +56,7 @@ class CategoryControllerTest {
     public void setup() {
         //Init MockMvc Object
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        securityController.setTestingMode();
     }
 
     Category createCategory(String catName, boolean save) {

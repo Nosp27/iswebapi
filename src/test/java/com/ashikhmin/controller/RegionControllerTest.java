@@ -26,6 +26,9 @@ import org.springframework.web.context.WebApplicationContext;
 @AutoConfigureMockMvc
 class RegionControllerTest {
     @Autowired
+    SecurityController securityController;
+
+    @Autowired
     PlatformTransactionManager transactionManager;
 
     @Autowired
@@ -42,6 +45,7 @@ class RegionControllerTest {
     public void setup() {
         //Init MockMvc Object
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        securityController.setTestingMode();
     }
 
     Region createRegion(String regionName, boolean save) {

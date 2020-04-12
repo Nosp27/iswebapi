@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -27,6 +26,9 @@ import java.util.logging.Logger;
 @RestController
 public class FacilityController {
     Logger logger = Logger.getLogger(FacilityController.class.getName());
+
+    @Autowired
+    SecurityController securityController;
 
     @Autowired
     FacilityRepo facilityRepo;
@@ -83,6 +85,7 @@ public class FacilityController {
 
     @PostMapping(path = "/facility")
     Facility addFacility(@RequestBody Facility facility) {
+        securityController.ensureManagerPermission();
         if (facility == null || (facility.get_id() == null && facility.getName() == null)) {
             return facilityRepo.save(new Facility());
         }
@@ -93,6 +96,7 @@ public class FacilityController {
 
     @PutMapping(path = "/facility")
     Facility updateFacility(@RequestBody Facility facility) {
+        securityController.ensureManagerPermission();
         Supplier<? extends RuntimeException> exceptionSupplier =
                 IswebapiApplication.valueErrorSupplier("No facility with id " + facility.get_id());
         Facility dbFacility = facilityRepo.findById(facility.get_id()).orElseThrow(exceptionSupplier);
@@ -116,6 +120,7 @@ public class FacilityController {
 
     @PostMapping(path = "/facility/notify/{id}")
     String notifyFacility(@PathVariable int id) {
+        securityController.ensureManagerPermission();
         Facility dbFacility = facilityRepo.findById(id)
                 .orElseThrow(IswebapiApplication.valueErrorSupplier("No facility with given id"));
         sendFacilityUpdateNotification(dbFacility);
@@ -123,6 +128,7 @@ public class FacilityController {
     }
 
     private void sendFacilityUpdateNotification(Facility facility) {
+        securityController.ensureManagerPermission();
         Notification notification = Notification.builder()
                 .setTitle(facility.getName() + "!")
                 .setBody("Go check!")
@@ -141,6 +147,7 @@ public class FacilityController {
 
     @DeleteMapping(path = "/facility/{facilityId}")
     Facility deleteFacility(@PathVariable int facilityId) {
+        securityController.ensureManagerPermission();
         Facility facility =
                 facilityRepo.findById(facilityId)
                         .orElseThrow(IswebapiApplication.valueErrorSupplier("No facility with id " + facilityId));

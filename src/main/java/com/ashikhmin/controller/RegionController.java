@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class RegionController {
     @Autowired
+    SecurityController securityController;
+
+    @Autowired
     RegionRepo regionRepo;
 
     @GetMapping(path = "/region/{id}")
@@ -29,11 +32,13 @@ public class RegionController {
 
     @PostMapping(path = "/region")
     Region addRegion(@RequestBody Region region) {
+        securityController.ensureManagerPermission();
         return regionRepo.save(region);
     }
 
     @PutMapping(path = "/region")
     Region updateRegion(@RequestBody Region region) {
+        securityController.ensureManagerPermission();
         Region r = regionRepo.findById(region.getRegionId()).orElseThrow(IswebapiApplication.valueErrorSupplier("No such region"));
         r.setRegionName(region.getRegionName());
         r.setArea(region.getArea());
@@ -48,6 +53,7 @@ public class RegionController {
 
     @DeleteMapping("/region/{regionId}")
     Region deleteRegion(@PathVariable(name = "regionId") Integer regionId) {
+        securityController.ensureManagerPermission();
         Region region =
                 regionRepo.findById(regionId)
                         .orElseThrow(IswebapiApplication.valueErrorSupplier("No region with id " + regionId));

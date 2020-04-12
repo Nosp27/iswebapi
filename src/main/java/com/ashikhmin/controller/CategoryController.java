@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class CategoryController {
     @Autowired
+    SecurityController securityController;
+
+    @Autowired
     CategoryRepo categoryRepo;
 
     @GetMapping(path = "/category/{catId}")
@@ -24,6 +27,7 @@ public class CategoryController {
 
     @PostMapping(path = "/category")
     Category addCategory(@RequestBody Category category) {
+        securityController.ensureManagerPermission();
         return categoryRepo.save(category);
     }
 
@@ -34,6 +38,7 @@ public class CategoryController {
 
     @PutMapping(path = "/category")
     Category updateCategory(@RequestBody Category category) {
+        securityController.ensureManagerPermission();
         Integer catId = category.getCatId();
         Category dbCat = categoryRepo.findById(catId)
                 .orElseThrow(IswebapiApplication.valueErrorSupplier("No category " + catId));
@@ -43,6 +48,7 @@ public class CategoryController {
 
     @DeleteMapping(path = "/category/{catId}")
     Category deleteCategory(@PathVariable(name = "catId") Integer catId) {
+        securityController.ensureManagerPermission();
         Category cat = categoryRepo.findById(catId)
                 .orElseThrow(IswebapiApplication.valueErrorSupplier("No such category (" + catId + ")"));
         categoryRepo.deleteById(catId);

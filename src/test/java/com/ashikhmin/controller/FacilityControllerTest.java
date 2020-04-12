@@ -31,6 +31,9 @@ import java.util.List;
 @AutoConfigureMockMvc
 class FacilityControllerTest {
     @Autowired
+    SecurityController securityController;
+
+    @Autowired
     PlatformTransactionManager transactionManager;
 
     @Autowired
@@ -53,6 +56,7 @@ class FacilityControllerTest {
     public void setup() {
         //Init MockMvc Object
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        securityController.setTestingMode();
     }
 
     private static int counter;

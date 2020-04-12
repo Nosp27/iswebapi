@@ -29,6 +29,9 @@ import org.springframework.web.context.WebApplicationContext;
 @AutoConfigureMockMvc
 public class ActorControllerTest {
     @Autowired
+    SecurityController securityController;
+
+    @Autowired
     PlatformTransactionManager transactionManager;
 
     @Autowired
@@ -48,6 +51,7 @@ public class ActorControllerTest {
     public void setup() {
         //Init MockMvc Object
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        securityController.setTestingMode();
     }
 
     MockHttpServletResponse postNewFacility() throws Exception {
