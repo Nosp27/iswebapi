@@ -17,11 +17,15 @@ public class SecurityController {
         if (testingMode)
             return;
 
-        List<String> userGroups = ((OidcUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-                .getUserInfo()
-                .getClaim("groups");
+        List<String> userGroups = getUserGroups();
         if (!userGroups.contains("Manager"))
             throw new AccessDeniedException("Only Managers can access!");
+    }
+
+    public List<String> getUserGroups() {
+        return ((OidcUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+                .getUserInfo()
+                .getClaim("groups");
     }
 
     public void setTestingMode() {

@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.util.CompositeIterator;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -32,6 +33,9 @@ import java.util.logging.Logger;
 @RestController
 public class ActorController {
     Logger logger = Logger.getLogger(ActorController.class.getName());
+
+    @Autowired
+    SecurityController securityController;
 
     @Autowired
     ActorRepo actorRepo;
@@ -55,11 +59,22 @@ public class ActorController {
         else
             newActor = Actor.testAcor(username);
 
-        if (actorRepo.findByUsername(username) == null)
+        if (securityController.getUserGroups().contains("Manager"))
+            newActor.setType("Manager");
+        else newActor.setType("Investor");
+
+        if (actorRepo.findByUsername(username) == null) {
             newActor = actorRepo.save(newActor);
-        else
+        } else
             newActor = editActor(newActor, username);
         return newActor;
+    }
+
+    public Actor findManager() {
+        Set<Actor> managers = actorRepo.findAllByType("Manager");
+        if (!managers.isEmpty())
+            return managers.iterator().next();
+        return null;
     }
 
     @PostMapping("/actor")
@@ -70,14 +85,14 @@ public class ActorController {
     @PostMapping("/actor/new_token")
     public String newToken(@RequestBody String token) {
         Actor currentActor = getActor();
-        if(token == null)
+        if (token == null)
             throw IswebapiApplication.valueError("Null firebase token supplied!");
-        if(token.equals("null")) {
+        if (token.equals("null")) {
             currentActor.setFirebaseToken(null);
             actorRepo.save(currentActor);
             return "Actor Token reset is successful";
         }
-        if(currentActor.getFirebaseToken() != null && token.equals(currentActor.getFirebaseToken()))
+        if (currentActor.getFirebaseToken() != null && token.equals(currentActor.getFirebaseToken()))
             return "Token is fine already";
         String finalMessage = currentActor.getFirebaseToken() == null ? "Successfully assigned a new token to %s" : "Successfully replaced token for %s";
         finalMessage = String.format(finalMessage, currentActor.getEmail());
@@ -120,8 +135,10 @@ public class ActorController {
         Iterable<Facility> actorFavorites = facilityRepo.getAllBySubscribedActorsContaining(getActor());
         List<Integer> actorFavoritesIds = new ArrayList<>();
         actorFavorites.forEach(e -> actorFavoritesIds.add(e.get_id()));
-        Iterable<Facility> facilitiesChangelog = facilityRepo.getChangelog(actorFavoritesIds);
-        return facilitiesChangelog;
+        if (!actorFavoritesIds.isEmpty()) {
+            return facilityRepo.getChangelog(actorFavoritesIds);
+        }
+        return new ArrayList<>();
     }
 
     @GetMapping("/actor/favorites")

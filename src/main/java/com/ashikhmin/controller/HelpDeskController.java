@@ -32,7 +32,12 @@ public class HelpDeskController {
     @PostMapping("/help/issue")
     public Issue openIssue(@RequestBody Issue issue) {
         Actor me = actorController.getActor();
+        Actor manager = actorController.findManager();
         issue.getParticipants().add(me);
+        if (manager != null && me.getId() != manager.getId()) {
+            issue.getParticipants().add(manager);
+            manager.getIssues().add(issue);
+        }
         me.getIssues().add(issue);
         issue.openIssue();
         return issueRepo.save(issue);

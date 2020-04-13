@@ -28,6 +28,9 @@ public class Actor {
     private String imageSrc;
     private String firebaseToken;
 
+    @Column(columnDefinition = "text not null default='Investor'")
+    private String type;
+
     public Actor() {
 
     }
@@ -146,6 +149,14 @@ public class Actor {
             favoriteFacilities.add(facility);
             return true;
         }
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Set<Facility> getFavoriteFacilities() {
