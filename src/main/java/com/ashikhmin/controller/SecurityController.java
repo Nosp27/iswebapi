@@ -6,6 +6,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,9 +24,13 @@ public class SecurityController {
     }
 
     public List<String> getUserGroups() {
-        return ((OidcUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-                .getUserInfo()
-                .getClaim("groups");
+        try {
+            return ((OidcUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+                    .getUserInfo()
+                    .getClaim("groups");
+        } catch (Throwable e) {
+            return new ArrayList<>();
+        }
     }
 
     public void setTestingMode() {
